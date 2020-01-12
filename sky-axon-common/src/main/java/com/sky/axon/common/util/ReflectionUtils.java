@@ -20,7 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.query.base.util;
+package com.sky.axon.common.util;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;

@@ -20,7 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.query.base;
+package com.sky.axon.common.model;
 
 import java.io.Serializable;
 import java.util.List;

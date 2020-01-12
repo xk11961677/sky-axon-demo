@@ -20,10 +20,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.query.base;
+package com.sky.axon.common.repository;
 
-import com.sky.axon.query.base.annotation.QueryField;
-import com.sky.axon.query.base.util.ReflectionUtils;
+import com.sky.axon.common.annotation.QueryField;
+import com.sky.axon.common.model.Page;
+import com.sky.axon.common.util.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.core.MongoTemplate;

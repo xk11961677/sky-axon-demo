@@ -9,36 +9,13 @@
         <relativePath>../sky-axon-bom</relativePath>
     </parent>
 
-    <artifactId>sky-axon-query</artifactId>
+    <artifactId>sky-axon-common</artifactId>
 
     <dependencies>
 
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>sky-axon-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>sky-axon-event</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>sky-axon-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.axonframework</groupId>
-            <artifactId>axon-spring</artifactId>
         </dependency>
 
         <dependency>
@@ -59,5 +36,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

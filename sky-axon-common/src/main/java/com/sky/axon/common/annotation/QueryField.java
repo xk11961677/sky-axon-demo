@@ -20,7 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.query.base.annotation;
+package com.sky.axon.common.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

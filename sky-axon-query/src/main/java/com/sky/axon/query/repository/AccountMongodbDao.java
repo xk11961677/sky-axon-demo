@@ -23,7 +23,7 @@
 package com.sky.axon.query.repository;
 
 
-import com.sky.axon.query.base.BaseRepository;
+import com.sky.axon.common.repository.BaseRepository;
 import com.sky.axon.query.model.Account;
 
 /**

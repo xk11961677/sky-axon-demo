@@ -22,7 +22,7 @@
  */
 package com.sky.axon.query.repository;
 
-import com.sky.axon.query.base.AbstractBaseRepository;
+import com.sky.axon.common.repository.AbstractBaseRepository;
 import com.sky.axon.query.model.Account;
 import org.springframework.stereotype.Repository;
 

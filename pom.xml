@@ -62,6 +62,8 @@
 
     <modules>
         <module>sky-axon-bom</module>
+        <module>sky-axon-dependencies</module>
+        <module>sky-axon-common</module>
         <module>sky-axon-api</module>
         <module>sky-axon-event</module>
         <module>sky-axon-query</module>
