@@ -32,6 +32,7 @@ import org.axonframework.modelling.command.Repository;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.function.Function;
 
 /**
  * @author
@@ -63,9 +64,12 @@ public class AccountCommandHandler {
     @CommandHandler
     protected String handle(ModifyAccountCommand modifyAccountCommand) {
         Aggregate<AccountAggregate> aggregate = repository.load(modifyAccountCommand.id);
-        aggregate.execute(accountAggregate -> {
+        AccountAggregate accountAggregate = aggregate.invoke(Function.identity());
+        accountAggregate.modifyAccount(modifyAccountCommand);
+
+        /*aggregate.execute(accountAggregate -> {
             accountAggregate.modifyAccount(modifyAccountCommand);
-        });
+        });*/
         return aggregate.identifierAsString();
     }
 
