@@ -36,18 +36,23 @@ import org.axonframework.extensions.mongo.eventsourcing.tokenstore.MongoTokenSto
 import org.axonframework.modelling.saga.repository.SagaStore;
 import org.axonframework.serialization.Serializer;
 import org.axonframework.serialization.json.JacksonSerializer;
-import org.axonframework.spring.eventsourcing.SpringAggregateSnapshotter;
+import org.axonframework.springboot.autoconfig.AxonAutoConfiguration;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
-import java.util.concurrent.Executors;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author
  */
 @Configuration
+@AutoConfigureAfter(AxonAutoConfiguration.class)
 public class AxonConfig {
 
     @Value("${spring.data.mongodb.database}")
@@ -68,18 +73,24 @@ public class AxonConfig {
     @Value("${mongodb.token.store.node.id}")
     private String nodeId;
 
+    @Value("${spring.application.name}")
+    private String applicationName;
 
-    /*@Bean(name = "productRepository")
-    public Repository<ProductAggregate> repository(EventStore eventStore){
-        return new EventSourcingRepository<ProductAggregate>(ProductAggregate.class, eventStore);
-    }*/
+    private final AtomicInteger threadPrefix = new AtomicInteger(1);
 
-    @SuppressWarnings("AlibabaThreadPoolCreation")
+
     @Bean
     public CustomSpringAggregateSnapshotter customSpringAggregateSnapshotter(EventStore eventStore) {
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(5, 10, 300, TimeUnit.SECONDS,
+                new ArrayBlockingQueue<>(1000), r -> {
+            Thread thread = new Thread(r);
+            thread.setDaemon(true);
+            thread.setName(applicationName + "-" + threadPrefix.getAndIncrement());
+            return thread;
+        });
         return CustomSpringAggregateSnapshotter.builder()
                 .eventStore(eventStore)
-                .executor(Executors.newFixedThreadPool(10))
+                .executor(threadPoolExecutor)
                 .build();
     }
 

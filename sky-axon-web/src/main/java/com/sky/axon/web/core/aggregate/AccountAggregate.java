@@ -30,6 +30,7 @@ import com.sky.axon.web.core.command.CreateAccountCommand;
 import com.sky.axon.web.core.command.ModifyAccountCommand;
 import com.sky.axon.web.core.command.RemoveAccountCommand;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
@@ -47,9 +48,9 @@ import static org.axonframework.modelling.command.AggregateLifecycle.markDeleted
  * @author
  */
 @Aggregate(snapshotTriggerDefinition = "customSnapshotTriggerDefinition")
-//@Aggregate(repository = "accountAggregateRepository")
 @Slf4j
 @Data
+@NoArgsConstructor
 public class AccountAggregate {
 
     @AggregateIdentifier
@@ -62,9 +63,6 @@ public class AccountAggregate {
     private List<AddressDTO> address;
 
     private Integer disabled;
-
-    public AccountAggregate() {
-    }
 
     @CommandHandler
     public AccountAggregate(CreateAccountCommand createAccountCommand) {

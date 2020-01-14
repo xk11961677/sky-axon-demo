@@ -27,12 +27,12 @@ import com.sky.axon.web.core.command.ModifyAccountCommand;
 import com.sky.axon.web.core.command.RemoveAccountCommand;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
+import org.axonframework.messaging.MetaData;
 import org.axonframework.modelling.command.Aggregate;
 import org.axonframework.modelling.command.Repository;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.function.Function;
 
 /**
  * @author
@@ -41,7 +41,8 @@ import java.util.function.Function;
 @Slf4j
 public class AccountCommandHandler {
 
-    @Resource
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+    @Resource(name = "accountAggregateRepository")
     private Repository<AccountAggregate> repository;
 
 
@@ -62,14 +63,10 @@ public class AccountCommandHandler {
      * @param modifyAccountCommand
      */
     @CommandHandler
-    protected String handle(ModifyAccountCommand modifyAccountCommand) {
-        Aggregate<AccountAggregate> aggregate = repository.load(modifyAccountCommand.id);
-        AccountAggregate accountAggregate = aggregate.invoke(Function.identity());
-        accountAggregate.modifyAccount(modifyAccountCommand);
+    protected String handle(ModifyAccountCommand modifyAccountCommand, MetaData metaData) {
 
-        /*aggregate.execute(accountAggregate -> {
-            accountAggregate.modifyAccount(modifyAccountCommand);
-        });*/
+        Aggregate<AccountAggregate> aggregate = repository.load(modifyAccountCommand.id);
+        aggregate.execute(accountAggregate -> accountAggregate.modifyAccount(modifyAccountCommand));
         return aggregate.identifierAsString();
     }
 
@@ -82,9 +79,7 @@ public class AccountCommandHandler {
     @CommandHandler
     protected void handle(RemoveAccountCommand removeAccountCommand) {
         Aggregate<AccountAggregate> aggregate = repository.load(removeAccountCommand.id);
-        aggregate.execute(accountAggregate -> {
-            accountAggregate.removeAccount(removeAccountCommand);
-        });
+        aggregate.execute(accountAggregate -> accountAggregate.removeAccount(removeAccountCommand));
     }
 
 }
