@@ -9,7 +9,7 @@
         <relativePath>../sky-axon-bom</relativePath>
     </parent>
 
-    <artifactId>sky-axon-web</artifactId>
+    <artifactId>sky-axon-command</artifactId>
 
 
 
@@ -115,7 +115,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.sky.axon.web.AxonDemoApplication</mainClass>
+                    <mainClass>com.sky.axon.command.AxonDemoApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>

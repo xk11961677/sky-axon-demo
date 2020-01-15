@@ -67,7 +67,7 @@
         <module>sky-axon-api</module>
         <module>sky-axon-event</module>
         <module>sky-axon-query</module>
-        <module>sky-axon-web</module>
+        <module>sky-axon-command</module>
     </modules>
 
 

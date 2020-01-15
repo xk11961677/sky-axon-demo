@@ -20,47 +20,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.web.service;
+package com.sky.axon.command.core.command;
 
-import com.sky.axon.api.commands.AccountDTO;
-import com.sky.axon.api.commands.EventDTO;
+import com.sky.axon.api.commands.AddressDTO;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.List;
 
 /**
+ * 创建账号
+ *
  * @author
  */
-public interface AccountCommandService {
+public class CreateAccountCommand extends BaseCommand<String> {
 
-    /**
-     * 创建账号
-     *
-     * @param accountCreateDTO
-     * @return
-     */
-    String createAccount(AccountDTO accountCreateDTO);
+    public final String accountBalance;
 
-    /**
-     * 更新账号
-     *
-     * @param accountCreateDTO
-     * @return
-     */
-    String modifyAccount(AccountDTO accountCreateDTO);
+    public final String currency;
 
-    /**
-     * 删除账号
-     *
-     * @param id
-     * @return
-     */
-    void removeAccount(String id);
+    public final List<AddressDTO> address;
 
-    /**
-     * 根据事件打快照
-     *
-     * @param eventDTO
-     */
-    void snapshotAccount(EventDTO eventDTO);
-
+    public CreateAccountCommand(String id, String accountBalance, String currency,
+                                List<AddressDTO> address) {
+        super(id);
+        this.accountBalance = accountBalance;
+        this.currency = currency;
+        this.address = address;
+    }
 }

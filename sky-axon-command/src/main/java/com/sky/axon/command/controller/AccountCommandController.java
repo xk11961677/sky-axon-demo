@@ -20,11 +20,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.web.controller;
+package com.sky.axon.command.controller;
 
 import com.sky.axon.api.commands.AccountDTO;
 import com.sky.axon.api.commands.EventDTO;
-import com.sky.axon.web.service.AccountCommandService;
+import com.sky.axon.command.service.AccountCommandService;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

@@ -20,7 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.web.config;
+package com.sky.axon.command.config;
 
 import com.mongodb.MongoClient;
 import org.axonframework.eventsourcing.EventCountSnapshotTriggerDefinition;

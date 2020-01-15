@@ -20,15 +20,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.web.service;
+package com.sky.axon.command.service;
 
 import com.sky.axon.api.commands.AccountDTO;
 import com.sky.axon.api.commands.EventDTO;
-import com.sky.axon.web.config.CustomSpringAggregateSnapshotter;
-import com.sky.axon.web.core.aggregate.AccountAggregate;
-import com.sky.axon.web.core.command.CreateAccountCommand;
-import com.sky.axon.web.core.command.ModifyAccountCommand;
-import com.sky.axon.web.core.command.RemoveAccountCommand;
+import com.sky.axon.command.config.CustomSpringAggregateSnapshotter;
+import com.sky.axon.command.core.aggregate.AccountAggregate;
+import com.sky.axon.command.core.command.CreateAccountCommand;
+import com.sky.axon.command.core.command.ModifyAccountCommand;
+import com.sky.axon.command.core.command.RemoveAccountCommand;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.eventhandling.DomainEventMessage;
