@@ -20,7 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.web.core.command;
+package com.sky.axon.command.core.command;
 
 import com.sky.axon.api.commands.AddressDTO;
 
@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @author
  */
-public class CreateAccountCommand extends BaseCommand<String> {
+public class ModifyAccountCommand extends BaseCommand<String> {
 
     public final String accountBalance;
 
@@ -39,7 +39,7 @@ public class CreateAccountCommand extends BaseCommand<String> {
 
     public final List<AddressDTO> address;
 
-    public CreateAccountCommand(String id, String accountBalance, String currency,
+    public ModifyAccountCommand(String id, String accountBalance, String currency,
                                 List<AddressDTO> address) {
         super(id);
         this.accountBalance = accountBalance;

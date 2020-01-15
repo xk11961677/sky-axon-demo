@@ -20,36 +20,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.web.controller;
+package com.sky.axon.command.service;
 
-import com.sky.axon.api.query.AccountQueryDTO;
-import com.sky.axon.query.model.Account;
-import com.sky.axon.query.service.AccountQueryService;
-import io.swagger.annotations.Api;
-import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
-import java.util.List;
+import com.sky.axon.api.commands.AccountDTO;
+import com.sky.axon.api.commands.EventDTO;
 
 /**
  * @author
  */
-@RestController
-@RequestMapping(value = "/bank-accounts")
-@Api(value = "Account Queries", description = "Account Query Events Endpoint", tags = "Account Queries")
-public class AccountQueryController {
+public interface AccountCommandService {
 
-    @Resource
-    private AccountQueryService accountQueryService;
+    /**
+     * 创建账号
+     *
+     * @param accountCreateDTO
+     * @return
+     */
+    String createAccount(AccountDTO accountCreateDTO);
 
+    /**
+     * 更新账号
+     *
+     * @param accountCreateDTO
+     * @return
+     */
+    String modifyAccount(AccountDTO accountCreateDTO);
 
-    @GetMapping("/findEvents")
-    public List<Object> findEvents(@RequestParam("id") String id) {
-        return accountQueryService.listEventsForAccount(id);
-    }
+    /**
+     * 删除账号
+     *
+     * @param id
+     * @return
+     */
+    void removeAccount(String id);
 
-    @GetMapping("/findAccount")
-    public List<Account> findAccount(@RequestBody AccountQueryDTO accountQueryDTO) {
-        return accountQueryService.findAccount(accountQueryDTO);
-    }
+    /**
+     * 根据事件打快照
+     *
+     * @param eventDTO
+     */
+    void snapshotAccount(EventDTO eventDTO);
+
 }

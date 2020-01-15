@@ -20,30 +20,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.web.core.command;
-
-import com.sky.axon.api.commands.AddressDTO;
-
-import java.util.List;
+package com.sky.axon.command.core.command;
 
 /**
- * 创建账号
+ * 删除账号
  *
  * @author
  */
-public class ModifyAccountCommand extends BaseCommand<String> {
+public class RemoveAccountCommand extends BaseCommand<String> {
 
-    public final String accountBalance;
-
-    public final String currency;
-
-    public final List<AddressDTO> address;
-
-    public ModifyAccountCommand(String id, String accountBalance, String currency,
-                                List<AddressDTO> address) {
+    public RemoveAccountCommand(String id) {
         super(id);
-        this.accountBalance = accountBalance;
-        this.currency = currency;
-        this.address = address;
     }
 }

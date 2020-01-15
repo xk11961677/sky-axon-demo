@@ -20,21 +20,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.web.core.command;
+package com.sky.axon.command;
 
-
-import org.axonframework.modelling.command.TargetAggregateIdentifier;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * @param <T>
  * @author
  */
-public class BaseCommand<T> {
+@SpringBootApplication(scanBasePackages = "com.sky.axon")
+public class AxonDemoApplication {
 
-    @TargetAggregateIdentifier
-    public final T id;
-
-    public BaseCommand(T id) {
-        this.id = id;
+    public static void main(String[] args) {
+        SpringApplication.run(AxonDemoApplication.class, args);
     }
+
 }
+
