@@ -20,11 +20,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.web.handler;
+package com.sky.axon.command.handler;
 
-import com.sky.axon.web.core.aggregate.AccountAggregate;
-import com.sky.axon.web.core.command.ModifyAccountCommand;
-import com.sky.axon.web.core.command.RemoveAccountCommand;
+import com.sky.axon.command.core.aggregate.AccountAggregate;
+import com.sky.axon.command.core.command.ModifyAccountCommand;
+import com.sky.axon.command.core.command.RemoveAccountCommand;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.messaging.MetaData;
