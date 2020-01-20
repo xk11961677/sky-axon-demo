@@ -74,9 +74,9 @@ public class AccountAggregate {
         //String identifier = DefaultIdentifierFactory.getInstance().generateIdentifier();
         //log.info("accountAggregate identifier:{}", identifier);
         Map<String, String> map = new HashMap<>();
-        map.put(AxonExtendConstants.TAG, "tag_1");
+        //map.put(AxonExtendConstants.TAG, "tag_1");
         map.put(AxonExtendConstants.TENANT_CODE, "tenantCode_1");
-        map.put(AxonExtendConstants.REVERSION, "v1");
+        //map.put(AxonExtendConstants.REVERSION, "v1");
         apply(new AccountCreatedEvent(createAccountCommand.id, createAccountCommand.accountBalance, createAccountCommand.currency, createAccountCommand.address, 0), MetaData.from(map));
     }
 
@@ -87,9 +87,9 @@ public class AccountAggregate {
      */
     public void modifyAccount(ModifyAccountCommand modifyAccountCommand) {
         Map<String, String> map = new HashMap<>();
-        map.put(AxonExtendConstants.TAG, "tag_1");
+        //map.put(AxonExtendConstants.TAG, "tag_1");
         map.put(AxonExtendConstants.TENANT_CODE, "tenantCode_1");
-        map.put(AxonExtendConstants.REVERSION, modifyAccountCommand.reversion);
+        //map.put(AxonExtendConstants.REVERSION, modifyAccountCommand.reversion);
         apply(new AccountModifiedEvent(modifyAccountCommand.id, modifyAccountCommand.accountBalance, modifyAccountCommand.currency, modifyAccountCommand.address), MetaData.from(map));
     }
 

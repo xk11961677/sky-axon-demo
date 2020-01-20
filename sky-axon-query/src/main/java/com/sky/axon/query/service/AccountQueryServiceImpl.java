@@ -27,7 +27,6 @@ import com.sky.axon.common.config.CustomMongoEventStorageEngine;
 import com.sky.axon.query.model.Account;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -40,7 +39,7 @@ import java.util.stream.Collectors;
 @Service
 public class AccountQueryServiceImpl implements AccountQueryService {
 
-    @Autowired(required = false)
+    @Resource
     private CustomMongoEventStorageEngine eventStore;
 
     @Resource
@@ -48,7 +47,8 @@ public class AccountQueryServiceImpl implements AccountQueryService {
 
     @Override
     public List<Object> listEventsForAccount(String id) {
-        return eventStore.readEvents(id).asStream().map(s -> s.getPayload()).collect(Collectors.toList());
+//        return eventStore.readEvents(id).asStream().map(s -> s.getPayload()).collect(Collectors.toList());
+        return eventStore.readEvents(id).asStream().collect(Collectors.toList());
     }
 
     @Override

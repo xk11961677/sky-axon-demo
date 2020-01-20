@@ -90,9 +90,9 @@ public class CustomDocumentPerEventStorageStrategy extends DocumentPerEventStora
                                                                int batchSize) {
         FindIterable<Document> cursor = collection
                 .find(and(eq(this.customEventEntryConfiguration.aggregateIdentifierProperty(), aggregateIdentifier),
-                        gte(this.customEventEntryConfiguration.sequenceNumberProperty(), firstSequenceNumber)
-                        //eq(this.customEventEntryConfiguration.reversion(), null),
-                        //eq(this.customEventEntryConfiguration.tag(), null)
+                        gte(this.customEventEntryConfiguration.sequenceNumberProperty(), firstSequenceNumber),
+                        eq(this.customEventEntryConfiguration.reversion(), "null"),
+                        eq(this.customEventEntryConfiguration.tag(), "null")
 
                 ))
                 .sort(new BasicDBObject(eventConfiguration().sequenceNumberProperty(), ORDER_ASC));

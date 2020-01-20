@@ -30,6 +30,7 @@ import com.sky.axon.command.core.command.CreateAccountCommand;
 import com.sky.axon.command.core.command.ModifyAccountCommand;
 import com.sky.axon.command.core.command.RemoveAccountCommand;
 import com.sky.axon.common.config.CustomMongoEventStorageEngine;
+import com.sky.axon.common.constant.AxonExtendConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.eventhandling.DomainEventMessage;
@@ -38,7 +39,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -87,8 +90,8 @@ public class AccountCommandServiceImpl implements AccountCommandService {
 
     @Override
     public void snapshotAccount(EventDTO eventDTO) {
-        //List<?> list = eventStore.readEvents(eventDTO.getId(), eventDTO.getSequenceNumber()).asStream().map(s -> s.getPayload()).collect(Collectors.toList());
-        snapshotter.scheduleSnapshot(AccountAggregate.class, eventDTO.getId());
+        /*List<?> list = eventStore.readEvents(eventDTO.getId(), eventDTO.getSequenceNumber()).asStream().map(s -> s.getPayload()).collect(Collectors.toList());
+        snapshotter.scheduleSnapshot(AccountAggregate.class, eventDTO.getId());*/
 
         DomainEventStream eventStream = eventStore.readEvents(eventDTO.getId(), eventDTO.getBeginSequenceNumber());
         long firstEventSequenceNumber = eventStream.peek().getSequenceNumber();
@@ -99,6 +102,11 @@ public class AccountCommandServiceImpl implements AccountCommandService {
         log.info("======>>snapshotAccount event total :{}", list.size());
 
         DomainEventMessage snapshotEvent = snapshotter.createSnapshot(AccountAggregate.class, eventDTO.getId(), DomainEventStream.of(list));
+        Map<String, String> map = new HashMap<>();
+        map.put(AxonExtendConstants.TAG, "tag_1");
+        map.put(AxonExtendConstants.TENANT_CODE, "tenantCode_1");
+        map.put(AxonExtendConstants.REVERSION, eventDTO.getReversion());
+        snapshotEvent.withMetaData(map);
         if (snapshotEvent != null && snapshotEvent.getSequenceNumber() > firstEventSequenceNumber) {
             eventStore.storeSnapshot(snapshotEvent);
         }
