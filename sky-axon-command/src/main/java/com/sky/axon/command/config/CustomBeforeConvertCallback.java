@@ -20,25 +20,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.api.commands;
+package com.sky.axon.command.config;
 
-import lombok.Data;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.util.ReflectionUtils;
 
-import java.util.List;
+import java.lang.reflect.Field;
 
 /**
  * @author
  */
-@Data
-public class AccountDTO {
+public class CustomBeforeConvertCallback implements ReflectionUtils.FieldCallback {
 
-    private String id;
+    private Object source;
 
-    private String startingBalance;
+    private MongoOperations mongoOperations;
 
-    private String currency;
+    public CustomBeforeConvertCallback(Object source, MongoOperations mongoOperations) {
+        this.source = source;
+        this.mongoOperations = mongoOperations;
+    }
 
-    private List<AddressDTO> address;
-
-    private String reversion;
+    @Override
+    public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+        ReflectionUtils.makeAccessible(field);
+        //获得值
+        final Object fieldValue = field.get(source);
+        if (fieldValue != null) {
+        }
+    }
 }

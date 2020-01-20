@@ -33,6 +33,7 @@ import java.util.List;
  */
 @Data
 @Builder
+//@Document(collection ="t_#{@customSpecialProvider.getTargetCollectionName()}")
 public class Account {
 
     private String id;

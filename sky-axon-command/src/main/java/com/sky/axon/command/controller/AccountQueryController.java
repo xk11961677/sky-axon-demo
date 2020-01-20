@@ -36,7 +36,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(value = "/bank-accounts")
-@Api(value = "Account Queries", description = "Account Query Events Endpoint", tags = "Account Queries")
+@Api(value = "Account Queries", tags = "Account Queries")
 public class AccountQueryController {
 
     @Resource

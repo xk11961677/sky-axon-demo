@@ -39,11 +39,14 @@ public class ModifyAccountCommand extends BaseCommand<String> {
 
     public final List<AddressDTO> address;
 
+    public final String reversion;
+
     public ModifyAccountCommand(String id, String accountBalance, String currency,
-                                List<AddressDTO> address) {
+                                List<AddressDTO> address, String reversion) {
         super(id);
         this.accountBalance = accountBalance;
         this.currency = currency;
         this.address = address;
+        this.reversion = reversion;
     }
 }

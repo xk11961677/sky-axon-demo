@@ -20,25 +20,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.api.commands;
-
-import lombok.Data;
-
-import java.util.List;
+package com.sky.axon.common.config;
 
 /**
  * @author
  */
-@Data
-public class AccountDTO {
+public class DataSourceContext {
 
-    private String id;
+    private static final ThreadLocal<String> contextHolder = new ThreadLocal<>();
 
-    private String startingBalance;
+    public static void setDataSource(String value) {
+        contextHolder.set(value);
+    }
 
-    private String currency;
+    public static String getDataSource() {
+        return contextHolder.get();
+    }
 
-    private List<AddressDTO> address;
-
-    private String reversion;
+    public static void clearDataSource() {
+        contextHolder.remove();
+    }
 }

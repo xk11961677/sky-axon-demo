@@ -23,21 +23,25 @@
 package com.sky.axon.command.core.aggregate;
 
 import com.sky.axon.api.commands.AddressDTO;
-import com.sky.axon.events.AccountCreatedEvent;
-import com.sky.axon.events.AccountModifiedEvent;
-import com.sky.axon.events.AccountRemovedEvent;
 import com.sky.axon.command.core.command.CreateAccountCommand;
 import com.sky.axon.command.core.command.ModifyAccountCommand;
 import com.sky.axon.command.core.command.RemoveAccountCommand;
+import com.sky.axon.common.constant.AxonExtendConstants;
+import com.sky.axon.events.AccountCreatedEvent;
+import com.sky.axon.events.AccountModifiedEvent;
+import com.sky.axon.events.AccountRemovedEvent;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
+import org.axonframework.messaging.MetaData;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.spring.stereotype.Aggregate;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 import static org.axonframework.modelling.command.AggregateLifecycle.markDeleted;
@@ -69,7 +73,11 @@ public class AccountAggregate {
         //axon默认使用java util uuid
         //String identifier = DefaultIdentifierFactory.getInstance().generateIdentifier();
         //log.info("accountAggregate identifier:{}", identifier);
-        apply(new AccountCreatedEvent(createAccountCommand.id, createAccountCommand.accountBalance, createAccountCommand.currency, createAccountCommand.address, 0));
+        Map<String, String> map = new HashMap<>();
+        map.put(AxonExtendConstants.TAG, "tag_1");
+        map.put(AxonExtendConstants.TENANT_CODE, "tenantCode_1");
+        map.put(AxonExtendConstants.REVERSION, "v1");
+        apply(new AccountCreatedEvent(createAccountCommand.id, createAccountCommand.accountBalance, createAccountCommand.currency, createAccountCommand.address, 0), MetaData.from(map));
     }
 
     /**
@@ -78,7 +86,11 @@ public class AccountAggregate {
      * @param modifyAccountCommand
      */
     public void modifyAccount(ModifyAccountCommand modifyAccountCommand) {
-        apply(new AccountModifiedEvent(modifyAccountCommand.id, modifyAccountCommand.accountBalance, modifyAccountCommand.currency, modifyAccountCommand.address));
+        Map<String, String> map = new HashMap<>();
+        map.put(AxonExtendConstants.TAG, "tag_1");
+        map.put(AxonExtendConstants.TENANT_CODE, "tenantCode_1");
+        map.put(AxonExtendConstants.REVERSION, modifyAccountCommand.reversion);
+        apply(new AccountModifiedEvent(modifyAccountCommand.id, modifyAccountCommand.accountBalance, modifyAccountCommand.currency, modifyAccountCommand.address), MetaData.from(map));
     }
 
     public void removeAccount(RemoveAccountCommand removeAccountCommand) {
@@ -105,6 +117,7 @@ public class AccountAggregate {
         this.currency = accountModifiedEvent.currency;
         this.accountBalance = accountModifiedEvent.accountBalance;
         this.address = accountModifiedEvent.address;
+        log.info("====================>>EventSourcingHandler AccountModifiedEvent :{}", accountModifiedEvent);
     }
 
     @EventSourcingHandler
@@ -112,5 +125,6 @@ public class AccountAggregate {
         this.id = accountRemovedEvent.id;
         this.disabled = accountRemovedEvent.disabled;
         markDeleted();
+        log.info("====================>>EventSourcingHandler AccountRemovedEvent :{}", accountRemovedEvent);
     }
 }

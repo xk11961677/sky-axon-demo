@@ -23,15 +23,15 @@
 package com.sky.axon.command.config;
 
 import com.mongodb.MongoClient;
+import com.sky.axon.common.config.CustomDocumentPerEventStorageStrategy;
+import com.sky.axon.common.config.CustomEventEntryConfiguration;
+import com.sky.axon.common.config.CustomMongoEventStorageEngine;
 import org.axonframework.eventsourcing.EventCountSnapshotTriggerDefinition;
 import org.axonframework.eventsourcing.SnapshotTriggerDefinition;
-import org.axonframework.eventsourcing.eventstore.EventStorageEngine;
 import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.axonframework.extensions.mongo.DefaultMongoTemplate;
 import org.axonframework.extensions.mongo.MongoTemplate;
 import org.axonframework.extensions.mongo.eventhandling.saga.repository.MongoSagaStore;
-import org.axonframework.extensions.mongo.eventsourcing.eventstore.MongoEventStorageEngine;
-import org.axonframework.extensions.mongo.eventsourcing.eventstore.documentperevent.DocumentPerEventStorageStrategy;
 import org.axonframework.extensions.mongo.eventsourcing.tokenstore.MongoTokenStore;
 import org.axonframework.modelling.saga.repository.SagaStore;
 import org.axonframework.serialization.Serializer;
@@ -96,7 +96,7 @@ public class AxonConfig {
 
     @Bean
     public SnapshotTriggerDefinition customSnapshotTriggerDefinition(EventStore eventStore) {
-        return new EventCountSnapshotTriggerDefinition(customSpringAggregateSnapshotter(eventStore), 10);
+        return new EventCountSnapshotTriggerDefinition(customSpringAggregateSnapshotter(eventStore), 2);
     }
 
 
@@ -107,10 +107,13 @@ public class AxonConfig {
     }
 
     @Bean
-    public EventStorageEngine eventStorageEngine(Serializer serializer, MongoClient client) {
-        return MongoEventStorageEngine.builder().eventSerializer(serializer).mongoTemplate(axonMongoTemplate(client))
+    public CustomMongoEventStorageEngine eventStorageEngine(Serializer serializer, MongoClient client) {
+        CustomDocumentPerEventStorageStrategy storageStrategy = new CustomDocumentPerEventStorageStrategy();
+        storageStrategy.setCustomEventEntryConfiguration(CustomEventEntryConfiguration.getDefault());
+        CustomMongoEventStorageEngine.Builder builder = CustomMongoEventStorageEngine.builder().eventSerializer(serializer).mongoTemplate(axonMongoTemplate(client))
                 .snapshotSerializer(serializer)
-                .storageStrategy(new DocumentPerEventStorageStrategy()).build();
+                .storageStrategy(storageStrategy);
+        return builder.build();
     }
 
     @Bean(name = "axonMongoTemplate")

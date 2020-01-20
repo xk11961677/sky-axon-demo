@@ -27,6 +27,7 @@ import com.sky.axon.events.AccountModifiedEvent;
 import com.sky.axon.events.AccountRemovedEvent;
 import com.sky.axon.query.model.Account;
 import com.sky.axon.query.repository.AccountMongodbDao;
+import com.sky.axon.query.repository.AccountTestRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
 import org.springframework.stereotype.Component;
@@ -46,6 +47,9 @@ public class AccountListener {
     @Resource
     private AccountMongodbDao accountMongodbDao;
 
+    @Resource
+    private AccountTestRepository accountTestRepository;
+
     /**
      * 创建账号业务逻辑
      * 异步创建
@@ -62,7 +66,9 @@ public class AccountListener {
                 .address(accountCreatedEvent.address)
                 .disabled(accountCreatedEvent.disabled)
                 .build();
-        accountMongodbDao.save(account);
+//        DataSourceContext.setDataSource("111111111");
+        //accountMongodbDao.save(account);
+        accountTestRepository.save(account);
     }
 
 

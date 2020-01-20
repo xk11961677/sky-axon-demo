@@ -20,25 +20,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.api.commands;
-
-import lombok.Data;
-
-import java.util.List;
+package com.sky.axon.common.constant;
 
 /**
  * @author
  */
-@Data
-public class AccountDTO {
+public class AxonExtendConstants {
 
-    private String id;
+    public static final String TAG = "tag";
 
-    private String startingBalance;
+    public static final String REVERSION = "reversion";
 
-    private String currency;
-
-    private List<AddressDTO> address;
-
-    private String reversion;
+    public static final String TENANT_CODE = "tenantCode";
 }

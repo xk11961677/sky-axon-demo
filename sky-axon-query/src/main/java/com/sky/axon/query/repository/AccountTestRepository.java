@@ -20,25 +20,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.api.commands;
+package com.sky.axon.query.repository;
 
-import lombok.Data;
-
-import java.util.List;
+import com.sky.axon.query.model.Account;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
  * @author
  */
-@Data
-public class AccountDTO {
+public interface AccountTestRepository extends MongoRepository<Account, String> {
 
-    private String id;
-
-    private String startingBalance;
-
-    private String currency;
-
-    private List<AddressDTO> address;
-
-    private String reversion;
 }

@@ -1,4 +1,26 @@
-package com.sky.axon.command.config;
+/*
+ * The MIT License (MIT)
+ * Copyright © 2020 <sky>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the “Software”), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+package com.sky.axon.common.config;
 
 import org.axonframework.extensions.mongo.eventsourcing.eventstore.documentperevent.EventEntryConfiguration;
 
@@ -9,7 +31,7 @@ public class CustomEventEntryConfiguration {
 
     private final String timestampProperty, eventIdentifierProperty, aggregateIdentifierProperty,
             sequenceNumberProperty, typeProperty, payloadTypeProperty, payloadRevisionProperty, payloadProperty,
-            metaDataProperty;
+            metaDataProperty, tag, reversion, tenantCode;
 
     /**
      * Returns the default {@link EventEntryConfiguration}.
@@ -30,6 +52,10 @@ public class CustomEventEntryConfiguration {
         payloadRevisionProperty = builder.payloadRevisionProperty;
         payloadProperty = builder.payloadProperty;
         metaDataProperty = builder.metaDataProperty;
+        tag = builder.tag;
+        reversion = builder.reversion;
+        tenantCode = builder.tenantCode;
+
     }
 
     /**
@@ -39,6 +65,33 @@ public class CustomEventEntryConfiguration {
      */
     public static CustomEventEntryConfiguration.Builder builder() {
         return new CustomEventEntryConfiguration.Builder();
+    }
+
+    /**
+     * 标签
+     *
+     * @return
+     */
+    public String tag() {
+        return tag;
+    }
+
+    /**
+     * 版本
+     *
+     * @return
+     */
+    public String reversion() {
+        return reversion;
+    }
+
+    /**
+     * 租户号
+     *
+     * @return
+     */
+    public String tenantCode() {
+        return tenantCode;
     }
 
     /**
@@ -133,6 +186,24 @@ public class CustomEventEntryConfiguration {
         private String payloadRevisionProperty = "payloadRevision";
         private String payloadProperty = "serializedPayload";
         private String metaDataProperty = "serializedMetaData";
+        private String tag = "tag";
+        private String reversion = "reversion";
+        private String tenantCode = "tenantCode";
+
+        public CustomEventEntryConfiguration.Builder tenantCode(String tenantCode) {
+            this.tenantCode = tenantCode;
+            return this;
+        }
+
+        public CustomEventEntryConfiguration.Builder tag(String tag) {
+            this.tag = tag;
+            return this;
+        }
+
+        public CustomEventEntryConfiguration.Builder reversion(String reversion) {
+            this.reversion = reversion;
+            return this;
+        }
 
         public CustomEventEntryConfiguration.Builder timestampProperty(String timestampProperty) {
             this.timestampProperty = timestampProperty;

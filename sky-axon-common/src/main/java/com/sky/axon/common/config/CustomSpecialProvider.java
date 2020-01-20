@@ -20,25 +20,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.api.commands;
+package com.sky.axon.common.config;
 
-import lombok.Data;
-
-import java.util.List;
+import org.springframework.stereotype.Component;
 
 /**
  * @author
  */
-@Data
-public class AccountDTO {
+@Component("customSpecialProvider")
+public class CustomSpecialProvider {
 
-    private String id;
-
-    private String startingBalance;
-
-    private String currency;
-
-    private List<AddressDTO> address;
-
-    private String reversion;
+    public String getTargetCollectionName() {
+        String targetCollectionName = (String) DataSourceContext.getDataSource();
+        if (targetCollectionName == null) {
+            targetCollectionName = "defaultCollection";
+        }
+        return targetCollectionName;
+    }
 }
+

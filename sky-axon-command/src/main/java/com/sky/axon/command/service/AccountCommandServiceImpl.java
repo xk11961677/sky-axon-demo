@@ -29,11 +29,12 @@ import com.sky.axon.command.core.aggregate.AccountAggregate;
 import com.sky.axon.command.core.command.CreateAccountCommand;
 import com.sky.axon.command.core.command.ModifyAccountCommand;
 import com.sky.axon.command.core.command.RemoveAccountCommand;
+import com.sky.axon.common.config.CustomMongoEventStorageEngine;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.eventhandling.DomainEventMessage;
 import org.axonframework.eventsourcing.eventstore.DomainEventStream;
-import org.axonframework.eventsourcing.eventstore.EventStore;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -52,8 +53,8 @@ public class AccountCommandServiceImpl implements AccountCommandService {
     @Resource
     private CommandGateway commandGateway;
 
-    @Resource
-    private EventStore eventStore;
+    @Autowired(required = false)
+    private CustomMongoEventStorageEngine eventStore;
 
     @Resource
     private CustomSpringAggregateSnapshotter snapshotter;
@@ -73,7 +74,8 @@ public class AccountCommandServiceImpl implements AccountCommandService {
         ModifyAccountCommand modifyAccountCommand = new ModifyAccountCommand(accountCreateDTO.getId(),
                 accountCreateDTO.getStartingBalance(),
                 accountCreateDTO.getCurrency(),
-                accountCreateDTO.getAddress());
+                accountCreateDTO.getAddress(),
+                accountCreateDTO.getReversion());
         CompletableFuture<String> result = commandGateway.send(modifyAccountCommand);
         return result.join();
     }
@@ -86,7 +88,7 @@ public class AccountCommandServiceImpl implements AccountCommandService {
     @Override
     public void snapshotAccount(EventDTO eventDTO) {
         //List<?> list = eventStore.readEvents(eventDTO.getId(), eventDTO.getSequenceNumber()).asStream().map(s -> s.getPayload()).collect(Collectors.toList());
-//        snapshotter.scheduleSnapshot(AccountAggregate.class,eventDTO.getId());
+        snapshotter.scheduleSnapshot(AccountAggregate.class, eventDTO.getId());
 
         DomainEventStream eventStream = eventStore.readEvents(eventDTO.getId(), eventDTO.getBeginSequenceNumber());
         long firstEventSequenceNumber = eventStream.peek().getSequenceNumber();

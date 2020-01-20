@@ -20,25 +20,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.api.commands;
+package com.sky.axon.common.dao;
 
-import lombok.Data;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.repository.NoRepositoryBean;
 
-import java.util.List;
+import java.io.Serializable;
 
 /**
+ * @param <T>
+ * @param <ID>
  * @author
  */
-@Data
-public class AccountDTO {
+@NoRepositoryBean
+public interface BaseMongoRepository<T, ID extends Serializable> extends MongoRepository<T, ID> {
 
-    private String id;
+    /**
+     * 自定义分页查询
+     *
+     * @param query
+     * @param pageable
+     * @return
+     */
+    Page<T> findPageByQuery(Query query, Pageable pageable);
 
-    private String startingBalance;
-
-    private String currency;
-
-    private List<AddressDTO> address;
-
-    private String reversion;
+    /**
+     * 自定义分页查询
+     *
+     * @param criteria
+     * @param pageable
+     * @return
+     */
+    Page<T> findPageByCriteria(Criteria criteria, Pageable pageable);
 }

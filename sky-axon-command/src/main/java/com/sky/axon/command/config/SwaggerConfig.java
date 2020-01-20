@@ -45,7 +45,7 @@ public class SwaggerConfig {
     public Docket apiDocket() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.sky.axon.web.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.sky.axon.command.controller"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(getApiInfo());

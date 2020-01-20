@@ -20,39 +20,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.query.service;
+/*package com.sky.axon.command.config;
 
-import com.sky.axon.api.query.AccountQueryDTO;
-import com.sky.axon.common.config.CustomMongoEventStorageEngine;
-import com.sky.axon.query.model.Account;
-import org.axonframework.messaging.responsetypes.ResponseTypes;
-import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
+import org.springframework.data.mongodb.core.mapping.event.BeforeConvertEvent;
+import org.springframework.data.mongodb.core.mapping.event.MongoMappingEvent;
+import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
 
-import javax.annotation.Resource;
-import java.util.List;
-import java.util.stream.Collectors;
-
-/**
+*//**
  * @author
- */
-@Service
-public class AccountQueryServiceImpl implements AccountQueryService {
+ *//*
+@Component
+public class CustomAbstractMongoEventListener extends AbstractMongoEventListener<Object> {
 
-    @Autowired(required = false)
-    private CustomMongoEventStorageEngine eventStore;
-
-    @Resource
-    private QueryGateway queryGateway;
+    @Autowired
+    private MongoOperations mongoOperations;
 
     @Override
-    public List<Object> listEventsForAccount(String id) {
-        return eventStore.readEvents(id).asStream().map(s -> s.getPayload()).collect(Collectors.toList());
+    public void onApplicationEvent(MongoMappingEvent<?> event) {
+        System.out.println("==============");
+        if (event instanceof BeforeConvertEvent) {
+            String collectionName = event.getCollectionName();
+            System.out.println(collectionName);
+            super.onBeforeConvert((BeforeConvertEvent<Object>) event);
+            Object source = event.getSource();
+            ReflectionUtils.doWithFields(source.getClass(), new CustomBeforeConvertCallback(source, mongoOperations));
+        }
+        super.onApplicationEvent(event);
     }
-
-    @Override
-    public List<Account> findAccount(AccountQueryDTO accountQueryDTO) {
-        return queryGateway.query(accountQueryDTO, ResponseTypes.multipleInstancesOf(Account.class)).join();
-    }
-}
+}*/
