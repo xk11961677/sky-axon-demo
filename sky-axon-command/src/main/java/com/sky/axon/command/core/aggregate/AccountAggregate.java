@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
-import static org.axonframework.modelling.command.AggregateLifecycle.markDeleted;
 
 /**
  * 删除, markDeleted();
@@ -66,7 +65,7 @@ public class AccountAggregate {
 
     private List<AddressDTO> address;
 
-    private Integer disabled;
+    private Integer disabled = 0;
 
     @CommandHandler
     public AccountAggregate(CreateAccountCommand createAccountCommand) {
@@ -90,7 +89,7 @@ public class AccountAggregate {
         //map.put(AxonExtendConstants.TAG, "tag_1");
         map.put(AxonExtendConstants.TENANT_CODE, "tenantCode_1");
         //map.put(AxonExtendConstants.REVERSION, modifyAccountCommand.reversion);
-        apply(new AccountModifiedEvent(modifyAccountCommand.id, modifyAccountCommand.accountBalance, modifyAccountCommand.currency, modifyAccountCommand.address), MetaData.from(map));
+        apply(new AccountModifiedEvent(modifyAccountCommand.id, modifyAccountCommand.accountBalance, modifyAccountCommand.currency, modifyAccountCommand.address, 0), MetaData.from(map));
     }
 
     public void removeAccount(RemoveAccountCommand removeAccountCommand) {
@@ -108,6 +107,7 @@ public class AccountAggregate {
         this.accountBalance = accountCreatedEvent.accountBalance;
         this.currency = accountCreatedEvent.currency;
         this.address = accountCreatedEvent.address;
+        this.disabled = accountCreatedEvent.disabled;
         log.info("====================>>EventSourcingHandler AccountCreatedEvent :{}", accountCreatedEvent);
     }
 
@@ -117,6 +117,7 @@ public class AccountAggregate {
         this.currency = accountModifiedEvent.currency;
         this.accountBalance = accountModifiedEvent.accountBalance;
         this.address = accountModifiedEvent.address;
+        this.disabled = accountModifiedEvent.disabled;
         log.info("====================>>EventSourcingHandler AccountModifiedEvent :{}", accountModifiedEvent);
     }
 
@@ -124,7 +125,7 @@ public class AccountAggregate {
     protected void on(AccountRemovedEvent accountRemovedEvent) {
         this.id = accountRemovedEvent.id;
         this.disabled = accountRemovedEvent.disabled;
-        markDeleted();
+        /*markDeleted();*/
         log.info("====================>>EventSourcingHandler AccountRemovedEvent :{}", accountRemovedEvent);
     }
 }

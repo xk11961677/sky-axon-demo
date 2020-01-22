@@ -43,11 +43,14 @@ public class AccountModifiedEvent extends BaseEvent<String> {
 
     public List<AddressDTO> address;
 
+    public Integer disabled;
+
     public AccountModifiedEvent(String id, String accountBalance, String currency,
-                                List<AddressDTO> address) {
+                                List<AddressDTO> address, Integer disabled) {
         super(id);
         this.accountBalance = accountBalance;
         this.currency = currency;
         this.address = address;
+        this.disabled = disabled;
     }
 }
