@@ -27,7 +27,7 @@
 │  │
 │  ├─sky-axon-query----------------查询模块
 │  │
-│  ├─sky-axon-web------------------命令模块
+│  ├─sky-axon-command--------------命令模块
 │  │
 │  │
     
@@ -65,6 +65,9 @@
    扩展axon:
        1. 默认查询将带有 版本 或 标签  的快照不能查询出来
        2. 快照不能将 扩展的标签 与 版本号 的快照数据覆盖
+       3. 自定义快照机制, 实现SnapshotTriggerDefinition 与SnapshotTrigger 接口,
+参考EventCountSnapshotTriggerDefinition与EventCountSnapshotTrigger类
+    
 
 ```
 
