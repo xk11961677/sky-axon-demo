@@ -20,22 +20,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.common.config;
+package com.sky.axon.common.config.mongo;
 
-import org.springframework.stereotype.Component;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Field;
 
 /**
  * @author
  */
-@Component("customSpecialProvider")
-public class CustomSpecialProvider {
+public class CustomBeforeConvertCallback implements ReflectionUtils.FieldCallback {
 
-    public String getTargetCollectionName() {
-        String targetCollectionName = (String) DataSourceContext.getDataSource();
-        if (targetCollectionName == null) {
-            targetCollectionName = "defaultCollection";
+    private Object source;
+
+    private MongoOperations mongoOperations;
+
+    public CustomBeforeConvertCallback(Object source, MongoOperations mongoOperations) {
+        this.source = source;
+        this.mongoOperations = mongoOperations;
+    }
+
+    @Override
+    public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+        ReflectionUtils.makeAccessible(field);
+        //获得值
+        final Object fieldValue = field.get(source);
+        if (fieldValue != null) {
         }
-        return targetCollectionName;
     }
 }
-

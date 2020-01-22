@@ -24,12 +24,12 @@ package com.sky.axon.command.service;
 
 import com.sky.axon.api.commands.AccountDTO;
 import com.sky.axon.api.commands.EventDTO;
-import com.sky.axon.command.config.CustomSpringAggregateSnapshotter;
+import com.sky.axon.common.config.axon.CustomSpringAggregateSnapshotter;
 import com.sky.axon.command.core.aggregate.AccountAggregate;
 import com.sky.axon.command.core.command.CreateAccountCommand;
 import com.sky.axon.command.core.command.ModifyAccountCommand;
 import com.sky.axon.command.core.command.RemoveAccountCommand;
-import com.sky.axon.common.config.CustomMongoEventStorageEngine;
+import com.sky.axon.common.config.axon.CustomMongoEventStorageEngine;
 import com.sky.axon.common.constant.AxonExtendConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;

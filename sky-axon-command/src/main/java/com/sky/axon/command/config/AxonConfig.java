@@ -23,9 +23,10 @@
 package com.sky.axon.command.config;
 
 import com.mongodb.MongoClient;
-import com.sky.axon.common.config.CustomDocumentPerEventStorageStrategy;
-import com.sky.axon.common.config.CustomEventEntryConfiguration;
-import com.sky.axon.common.config.CustomMongoEventStorageEngine;
+import com.sky.axon.common.config.axon.CustomDocumentPerEventStorageStrategy;
+import com.sky.axon.common.config.axon.CustomEventEntryConfiguration;
+import com.sky.axon.common.config.axon.CustomMongoEventStorageEngine;
+import com.sky.axon.common.config.axon.CustomSpringAggregateSnapshotter;
 import org.axonframework.eventsourcing.EventCountSnapshotTriggerDefinition;
 import org.axonframework.eventsourcing.SnapshotTriggerDefinition;
 import org.axonframework.eventsourcing.eventstore.EventStore;
@@ -37,8 +38,11 @@ import org.axonframework.modelling.saga.repository.SagaStore;
 import org.axonframework.serialization.Serializer;
 import org.axonframework.serialization.json.JacksonSerializer;
 import org.axonframework.springboot.autoconfig.AxonAutoConfiguration;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -53,7 +57,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Configuration
 @AutoConfigureAfter(AxonAutoConfiguration.class)
-public class AxonConfig {
+public class AxonConfig implements ApplicationContextAware {
 
     @Value("${spring.data.mongodb.database}")
     private String mongoDbName;
@@ -78,6 +82,13 @@ public class AxonConfig {
 
     private final AtomicInteger threadPrefix = new AtomicInteger(1);
 
+    private ApplicationContext applicationContext;
+
+    /*@Bean
+    public CustomCommandGateway customGateway(CommandBus commandBus) {
+        CommandGatewayFactory factory = CommandGatewayFactory.builder().commandBus(commandBus).build();
+        return factory.createGateway(CustomCommandGateway.class);
+    }*/
 
     @Bean
     public CustomSpringAggregateSnapshotter customSpringAggregateSnapshotter(EventStore eventStore) {
@@ -88,10 +99,12 @@ public class AxonConfig {
             thread.setName(applicationName + "-" + threadPrefix.getAndIncrement());
             return thread;
         });
-        return CustomSpringAggregateSnapshotter.builder()
+        CustomSpringAggregateSnapshotter snapshotter = CustomSpringAggregateSnapshotter.builder()
                 .eventStore(eventStore)
                 .executor(threadPoolExecutor)
                 .build();
+        snapshotter.setApplicationContext(applicationContext);
+        return snapshotter;
     }
 
     @Bean
@@ -142,5 +155,10 @@ public class AxonConfig {
                 .mongoTemplate(axonMongoTemplate(client))
                 .serializer(axonJsonSerializer())
                 .build();
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }

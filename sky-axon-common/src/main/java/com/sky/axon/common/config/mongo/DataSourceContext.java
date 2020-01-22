@@ -20,33 +20,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.command.config;
-
-import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.util.ReflectionUtils;
-
-import java.lang.reflect.Field;
+package com.sky.axon.common.config.mongo;
 
 /**
  * @author
  */
-public class CustomBeforeConvertCallback implements ReflectionUtils.FieldCallback {
+public class DataSourceContext {
 
-    private Object source;
+    private static final ThreadLocal<String> contextHolder = new ThreadLocal<>();
 
-    private MongoOperations mongoOperations;
-
-    public CustomBeforeConvertCallback(Object source, MongoOperations mongoOperations) {
-        this.source = source;
-        this.mongoOperations = mongoOperations;
+    public static void setDataSource(String value) {
+        contextHolder.set(value);
     }
 
-    @Override
-    public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
-        ReflectionUtils.makeAccessible(field);
-        //获得值
-        final Object fieldValue = field.get(source);
-        if (fieldValue != null) {
-        }
+    public static String getDataSource() {
+        return contextHolder.get();
+    }
+
+    public static void clearDataSource() {
+        contextHolder.remove();
     }
 }

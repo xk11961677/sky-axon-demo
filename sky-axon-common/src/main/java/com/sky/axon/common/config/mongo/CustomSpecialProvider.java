@@ -20,24 +20,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.common.config;
+package com.sky.axon.common.config.mongo;
+
+import org.springframework.stereotype.Component;
 
 /**
  * @author
  */
-public class DataSourceContext {
+@Component("customSpecialProvider")
+public class CustomSpecialProvider {
 
-    private static final ThreadLocal<String> contextHolder = new ThreadLocal<>();
-
-    public static void setDataSource(String value) {
-        contextHolder.set(value);
-    }
-
-    public static String getDataSource() {
-        return contextHolder.get();
-    }
-
-    public static void clearDataSource() {
-        contextHolder.remove();
+    public String getTargetCollectionName() {
+        String targetCollectionName = (String) DataSourceContext.getDataSource();
+        if (targetCollectionName == null) {
+            targetCollectionName = "defaultCollection";
+        }
+        return targetCollectionName;
     }
 }
+

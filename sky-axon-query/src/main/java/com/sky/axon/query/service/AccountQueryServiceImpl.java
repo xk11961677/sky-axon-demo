@@ -23,7 +23,7 @@
 package com.sky.axon.query.service;
 
 import com.sky.axon.api.query.AccountQueryDTO;
-import com.sky.axon.common.config.CustomMongoEventStorageEngine;
+import com.sky.axon.common.config.axon.CustomMongoEventStorageEngine;
 import com.sky.axon.query.model.Account;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
