@@ -24,6 +24,7 @@ package com.sky.axon.common.config;
 
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoBulkWriteException;
+import com.sky.axon.common.constant.AxonExtendConstants;
 import org.axonframework.common.AxonConfigurationException;
 import org.axonframework.common.jdbc.PersistenceExceptionResolver;
 import org.axonframework.eventhandling.*;
@@ -33,8 +34,10 @@ import org.axonframework.extensions.mongo.eventsourcing.eventstore.MongoEventSto
 import org.axonframework.extensions.mongo.eventsourcing.eventstore.MongoTrackingToken;
 import org.axonframework.extensions.mongo.eventsourcing.eventstore.StorageStrategy;
 import org.axonframework.extensions.mongo.eventsourcing.eventstore.documentperevent.DocumentPerEventStorageStrategy;
+import org.axonframework.messaging.MetaData;
 import org.axonframework.serialization.Serializer;
 import org.axonframework.serialization.upcasting.event.EventUpcaster;
+import org.springframework.util.StringUtils;
 
 import java.time.Instant;
 import java.util.Collections;
@@ -114,13 +117,16 @@ public class CustomMongoEventStorageEngine extends BatchingEventStorageEngine {
     protected void storeSnapshot(DomainEventMessage<?> snapshot, Serializer serializer) {
         try {
             storageStrategy.appendSnapshot(template.snapshotCollection(), snapshot, serializer);
-            storageStrategy.deleteSnapshots(
-                    template.snapshotCollection(), snapshot.getAggregateIdentifier(), snapshot.getSequenceNumber()
-            );
+            MetaData metaData = snapshot.getMetaData();
+            if (!StringUtils.isEmpty(metaData.get(AxonExtendConstants.TAG))) {
+                return;
+            }
+            storageStrategy.deleteSnapshots(template.snapshotCollection(), snapshot.getAggregateIdentifier(), snapshot.getSequenceNumber());
         } catch (Exception e) {
             handlePersistenceException(e, snapshot);
         }
     }
+
 
     @Override
     protected Stream<? extends DomainEventData<?>> readSnapshotData(String aggregateIdentifier) {

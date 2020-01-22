@@ -30,14 +30,33 @@ import lombok.Data;
 @Data
 public class EventDTO {
 
+    /**
+     * 聚合ID
+     */
     String id;
-
+    /**
+     *
+     */
     String type;
 
+    /**
+     * 开始版本
+     */
     Long beginSequenceNumber;
 
+    /**
+     * 结束版本
+     */
     Long endSequenceNumber;
 
+    /**
+     * 自定义版本号
+     */
     String reversion;
+
+    /**
+     * 标签名称
+     */
+    String tag;
 
 }

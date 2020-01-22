@@ -35,14 +35,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.eventhandling.DomainEventMessage;
 import org.axonframework.eventsourcing.eventstore.DomainEventStream;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.axonframework.messaging.MetaData;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -56,7 +53,7 @@ public class AccountCommandServiceImpl implements AccountCommandService {
     @Resource
     private CommandGateway commandGateway;
 
-    @Autowired(required = false)
+    @Resource
     private CustomMongoEventStorageEngine eventStore;
 
     @Resource
@@ -102,13 +99,18 @@ public class AccountCommandServiceImpl implements AccountCommandService {
         log.info("======>>snapshotAccount event total :{}", list.size());
 
         DomainEventMessage snapshotEvent = snapshotter.createSnapshot(AccountAggregate.class, eventDTO.getId(), DomainEventStream.of(list));
-        Map<String, String> map = new HashMap<>();
-        map.put(AxonExtendConstants.TAG, "tag_1");
+
+        MetaData metaData = snapshotEvent.getMetaData();
+        Map<String, Object> map = new HashMap<>();
+        for (Iterator<String> iterator = metaData.keySet().iterator(); iterator.hasNext(); ) {
+            map.put(iterator.next(), metaData.get(iterator.next()));
+        }
+        map.put(AxonExtendConstants.TAG, eventDTO.getTag());
         map.put(AxonExtendConstants.TENANT_CODE, "tenantCode_1");
         map.put(AxonExtendConstants.REVERSION, eventDTO.getReversion());
-        snapshotEvent.withMetaData(map);
+        DomainEventMessage domainEventMessage = snapshotEvent.withMetaData(map);
         if (snapshotEvent != null && snapshotEvent.getSequenceNumber() > firstEventSequenceNumber) {
-            eventStore.storeSnapshot(snapshotEvent);
+            eventStore.storeSnapshot(domainEventMessage);
         }
     }
 }

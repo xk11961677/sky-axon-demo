@@ -25,6 +25,10 @@ package com.sky.axon.common.config;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.Sorts;
+import com.sky.axon.common.constant.AxonExtendConstants;
 import lombok.Getter;
 import lombok.Setter;
 import org.axonframework.eventhandling.DomainEventData;
@@ -32,12 +36,16 @@ import org.axonframework.eventhandling.DomainEventMessage;
 import org.axonframework.eventhandling.EventMessage;
 import org.axonframework.eventhandling.EventUtils;
 import org.axonframework.extensions.mongo.eventsourcing.eventstore.documentperevent.DocumentPerEventStorageStrategy;
+import org.axonframework.messaging.MetaData;
 import org.axonframework.serialization.Serializer;
 import org.bson.Document;
+import org.bson.conversions.Bson;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static com.mongodb.client.model.Filters.*;
 import static java.util.stream.StreamSupport.stream;
@@ -62,6 +70,21 @@ public class CustomDocumentPerEventStorageStrategy extends DocumentPerEventStora
                 .map(entry -> entry.asDocument(this.getCustomEventEntryConfiguration()));
     }
 
+    @Override
+    public void ensureIndexes(MongoCollection<Document> eventsCollection,
+                              MongoCollection<Document> snapshotsCollection) {
+        eventsCollection.createIndex(new BasicDBObject(customEventEntryConfiguration.aggregateIdentifierProperty(), ORDER_ASC)
+                        .append(customEventEntryConfiguration.sequenceNumberProperty(), ORDER_ASC),
+                new IndexOptions().unique(true).name("uniqueAggregateIndex"));
+
+        eventsCollection.createIndex(new BasicDBObject(customEventEntryConfiguration.timestampProperty(), ORDER_ASC)
+                        .append(customEventEntryConfiguration.sequenceNumberProperty(), ORDER_ASC),
+                new IndexOptions().unique(false).name("orderedEventStreamIndex"));
+        snapshotsCollection.createIndex(new BasicDBObject(customEventEntryConfiguration.aggregateIdentifierProperty(), ORDER_ASC)
+                        .append(customEventEntryConfiguration.sequenceNumberProperty(), ORDER_ASC),
+                new IndexOptions().unique(false).name("noUniqueAggregateIndex"));
+    }
+
 
     @Override
     protected DomainEventData<?> extractSnapshot(Document object) {
@@ -78,8 +101,19 @@ public class CustomDocumentPerEventStorageStrategy extends DocumentPerEventStora
     }
 
     @Override
-    public void deleteSnapshots(MongoCollection<Document> snapshotCollection, String aggregateIdentifier,
-                                long sequenceNumber) {
+    public void appendSnapshot(MongoCollection<Document> snapshotCollection, DomainEventMessage<?> snapshot, Serializer serializer) {
+        MetaData metaData = snapshot.getMetaData();
+        if (!StringUtils.isEmpty(metaData.get(AxonExtendConstants.TAG))) {
+            Document snapshotDocument = this.createSnapshotDocument(snapshot, serializer);
+            this.deleteSnapshots(snapshotCollection, snapshot.getAggregateIdentifier(), snapshot.getSequenceNumber(), metaData);
+            snapshotCollection.insertOne(snapshotDocument);
+            return;
+        }
+        super.appendSnapshot(snapshotCollection, snapshot, serializer);
+    }
+
+    @Override
+    public void deleteSnapshots(MongoCollection<Document> snapshotCollection, String aggregateIdentifier, long sequenceNumber) {
         snapshotCollection.deleteMany(and(eq(this.customEventEntryConfiguration.aggregateIdentifierProperty(), aggregateIdentifier),
                 lt(this.customEventEntryConfiguration.sequenceNumberProperty(), sequenceNumber)));
     }
@@ -102,4 +136,24 @@ public class CustomDocumentPerEventStorageStrategy extends DocumentPerEventStora
         return collect;
     }
 
+    @Override
+    public Stream<? extends DomainEventData<?>> findSnapshots(MongoCollection<Document> snapshotCollection, String aggregateIdentifier) {
+        FindIterable<Document> cursor = snapshotCollection.find(Filters.eq(this.customEventEntryConfiguration.aggregateIdentifierProperty(), aggregateIdentifier)).sort(Sorts.orderBy(new Bson[]{Sorts.descending(new String[]{this.customEventEntryConfiguration.sequenceNumberProperty()})}));
+        return StreamSupport.stream(cursor.spliterator(), false).map(this::extractSnapshot);
+    }
+
+    /**
+     * 删除快照,不能有重复版本
+     *
+     * @param snapshotCollection
+     * @param aggregateIdentifier
+     * @param sequenceNumber
+     * @param metaData
+     */
+    public void deleteSnapshots(MongoCollection<Document> snapshotCollection, String aggregateIdentifier, long sequenceNumber, MetaData metaData) {
+        snapshotCollection.deleteMany(and(eq(this.customEventEntryConfiguration.aggregateIdentifierProperty(), aggregateIdentifier),
+//                eq(this.customEventEntryConfiguration.sequenceNumberProperty(), sequenceNumber),
+                eq(this.customEventEntryConfiguration.tag(), metaData.get(AxonExtendConstants.TAG))
+        ));
+    }
 }
