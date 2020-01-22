@@ -20,32 +20,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.command;
+package com.sky.axon.command.filter;
 
-import com.sky.axon.command.filter.RequestWrapperFilter;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * @author
  */
-@SpringBootApplication(scanBasePackages = "com.sky.axon")
-@EnableMongoRepositories(basePackages = "com.sky.axon.query.repository")
-public class AxonDemoApplication {
+@Slf4j
+public class RequestWrapperFilter extends OncePerRequestFilter {
 
-    public static void main(String[] args) {
-        SpringApplication.run(AxonDemoApplication.class, args);
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        ServletRequest requestWrapper = new BodyReaderHttpServletRequestWrapper(request);
+        String tenantCode = requestWrapper.getParameter("tenantCode");
+        try{
+            filterChain.doFilter(requestWrapper, response);
+        }finally {
+            log.info("request wrapper filter tenantCode :{} ", tenantCode);
+        }
     }
 
-    @Bean
-    public FilterRegistrationBean filterRegistrationBean() {
-        FilterRegistrationBean bean = new FilterRegistrationBean();
-        bean.setFilter(new RequestWrapperFilter());
-        bean.addUrlPatterns("/bank-accounts/*");
-        return bean;
-    }
 }
-
