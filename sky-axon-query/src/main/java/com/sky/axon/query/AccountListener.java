@@ -29,6 +29,7 @@ import com.sky.axon.query.model.Account;
 import com.sky.axon.query.repository.AccountMongodbDao;
 import com.sky.axon.query.repository.AccountTestRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.axonframework.config.ProcessingGroup;
 import org.axonframework.eventhandling.EventHandler;
 import org.springframework.stereotype.Component;
 
@@ -42,6 +43,7 @@ import javax.annotation.Resource;
  */
 @Component
 @Slf4j
+@ProcessingGroup("accountListener")
 public class AccountListener {
 
     @Resource
@@ -71,7 +73,11 @@ public class AccountListener {
         accountTestRepository.save(account);
     }
 
-
+    /**
+     * unit 回滚: CurrentUnitOfWork.get().rollback();
+     *
+     * @param accountModifiedEvent
+     */
     @EventHandler
     protected void on(AccountModifiedEvent accountModifiedEvent) {
         log.info("===>>EventHandler AccountModifiedEvent: {}", accountModifiedEvent);
