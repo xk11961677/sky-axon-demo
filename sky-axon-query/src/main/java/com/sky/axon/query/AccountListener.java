@@ -31,6 +31,7 @@ import com.sky.axon.query.repository.AccountTestRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.config.ProcessingGroup;
 import org.axonframework.eventhandling.EventHandler;
+import org.axonframework.eventhandling.SequenceNumber;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -59,8 +60,8 @@ public class AccountListener {
      * @param accountCreatedEvent
      */
     @EventHandler
-    protected void on(AccountCreatedEvent accountCreatedEvent) {
-        log.info("===>>EventHandler AccountCreatedEvent: {}", accountCreatedEvent);
+    protected void on(AccountCreatedEvent accountCreatedEvent, @SequenceNumber Long sequence) {
+        log.info("===>>EventHandler AccountCreatedEvent: "+sequence+"{}", accountCreatedEvent);
         Account account = Account.builder()
                 .id(accountCreatedEvent.id)
                 .accountBalance(accountCreatedEvent.accountBalance)
@@ -79,8 +80,8 @@ public class AccountListener {
      * @param accountModifiedEvent
      */
     @EventHandler
-    protected void on(AccountModifiedEvent accountModifiedEvent) {
-        log.info("===>>EventHandler AccountModifiedEvent: {}", accountModifiedEvent);
+    protected void on(AccountModifiedEvent accountModifiedEvent,@SequenceNumber Long sequence) {
+        log.info("===>>EventHandler AccountModifiedEvent: "+sequence+" {}", accountModifiedEvent);
         Account account = Account.builder()
                 .accountBalance(accountModifiedEvent.accountBalance)
                 .currency(accountModifiedEvent.currency)

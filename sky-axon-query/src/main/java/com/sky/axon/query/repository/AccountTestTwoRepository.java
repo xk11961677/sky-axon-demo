@@ -20,4 +20,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.common.config;
+package com.sky.axon.query.repository;
+
+import com.sky.axon.query.model.AccountTestTwo;
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+/**
+ * @author
+ */
+public interface AccountTestTwoRepository extends MongoRepository<AccountTestTwo, String> {
+
+}

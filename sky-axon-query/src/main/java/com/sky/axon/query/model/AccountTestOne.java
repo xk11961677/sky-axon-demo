@@ -20,4 +20,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.common.config;
+package com.sky.axon.query.model;
+
+import com.sky.axon.api.commands.AddressDTO;
+import lombok.Builder;
+import lombok.Data;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.List;
+
+/**
+ * @author
+ */
+@Data
+@Builder
+@Document(collection = "account_one")
+public class AccountTestOne {
+
+    private String id;
+
+    private String accountBalance;
+
+    private String currency;
+
+    private List<AddressDTO> address;
+
+    private Integer disabled;
+}

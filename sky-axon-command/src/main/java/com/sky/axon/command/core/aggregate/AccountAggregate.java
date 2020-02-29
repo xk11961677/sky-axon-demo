@@ -34,9 +34,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
+import org.axonframework.eventsourcing.EventSourcedAggregate;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.messaging.MetaData;
 import org.axonframework.modelling.command.AggregateIdentifier;
+import org.axonframework.modelling.command.ApplyMore;
 import org.axonframework.spring.stereotype.Aggregate;
 
 import java.util.HashMap;
@@ -76,7 +78,13 @@ public class AccountAggregate {
         //map.put(AxonExtendConstants.TAG, "tag_1");
         map.put(AxonExtendConstants.TENANT_CODE, "tenantCode_1");
         //map.put(AxonExtendConstants.REVERSION, "v1");
-        apply(new AccountCreatedEvent(createAccountCommand.id, createAccountCommand.accountBalance, createAccountCommand.currency, createAccountCommand.address, 0), MetaData.from(map));
+        ApplyMore apply = apply(new AccountCreatedEvent(createAccountCommand.id, createAccountCommand.accountBalance, createAccountCommand.currency, createAccountCommand.address, 0), MetaData.from(map));
+        EventSourcedAggregate aggregate = (EventSourcedAggregate) apply;
+        Long version = aggregate.version();
+        if(version == null) {
+            version =  0L;
+        }
+        System.out.println(version);
     }
 
     /**
@@ -89,11 +97,17 @@ public class AccountAggregate {
         //map.put(AxonExtendConstants.TAG, "tag_1");
         map.put(AxonExtendConstants.TENANT_CODE, "tenantCode_1");
         //map.put(AxonExtendConstants.REVERSION, modifyAccountCommand.reversion);
-        apply(new AccountModifiedEvent(modifyAccountCommand.id, modifyAccountCommand.accountBalance, modifyAccountCommand.currency, modifyAccountCommand.address, 0), MetaData.from(map));
+        ApplyMore apply = apply(new AccountModifiedEvent(modifyAccountCommand.id, modifyAccountCommand.accountBalance, modifyAccountCommand.currency, modifyAccountCommand.address, 0), MetaData.from(map));
+        EventSourcedAggregate aggregate = (EventSourcedAggregate) apply;
+        Long version = aggregate.version();
+        System.out.println(version);
     }
 
     public void removeAccount(RemoveAccountCommand removeAccountCommand) {
-        apply(new AccountRemovedEvent(removeAccountCommand.id, 1));
+        ApplyMore apply = apply(new AccountRemovedEvent(removeAccountCommand.id, 1));
+        EventSourcedAggregate aggregate = (EventSourcedAggregate) apply;
+        Long version = aggregate.version();
+        System.out.println(version);
     }
 
     /**

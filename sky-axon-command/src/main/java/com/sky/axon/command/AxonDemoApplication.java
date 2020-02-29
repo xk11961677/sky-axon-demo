@@ -27,14 +27,23 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * @author
  */
 @SpringBootApplication(scanBasePackages = "com.sky.axon")
 @EnableMongoRepositories(basePackages = "com.sky.axon.query.repository")
+@EnableTransactionManagement
 public class AxonDemoApplication {
+
+    @Bean
+    MongoTransactionManager transactionManager(MongoDbFactory factory){
+        return new MongoTransactionManager(factory);
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(AxonDemoApplication.class, args);

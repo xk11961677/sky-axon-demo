@@ -25,6 +25,7 @@ package com.sky.axon.query.model;
 import com.sky.axon.api.commands.AddressDTO;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 

@@ -23,6 +23,7 @@
 package com.sky.axon.command.controller;
 
 import com.sky.axon.api.query.AccountQueryDTO;
+import com.sky.axon.command.service.MultiCollectionService;
 import com.sky.axon.query.model.Account;
 import com.sky.axon.query.service.AccountQueryService;
 import io.swagger.annotations.Api;
@@ -42,6 +43,9 @@ public class AccountQueryController {
     @Resource
     private AccountQueryService accountQueryService;
 
+    @Resource
+    private MultiCollectionService multiCollectionService;
+
 
     @GetMapping("/findEvents")
     public List<Object> findEvents(@RequestParam("id") String id) {
@@ -51,5 +55,10 @@ public class AccountQueryController {
     @GetMapping("/findAccount")
     public List<Account> findAccount(@RequestBody AccountQueryDTO accountQueryDTO) {
         return accountQueryService.findAccount(accountQueryDTO);
+    }
+
+    @GetMapping("/multi")
+    public void multi() {
+        multiCollectionService.add();
     }
 }
