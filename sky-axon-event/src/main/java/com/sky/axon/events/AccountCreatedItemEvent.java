@@ -20,23 +20,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.api.query;
+package com.sky.axon.events;
 
 import lombok.Data;
+import org.axonframework.serialization.Revision;
 
 /**
+ * 账号创建事件
+ *
  * @author
  */
+@Revision("1.0.0")
 @Data
-public class AccountQueryDTO {
+public class AccountCreatedItemEvent extends BaseEvent<String> {
 
-    private String id;
+    private String test;
 
-    private Double startingBalance;
+    public AccountCreatedItemEvent() {
+        super();
+    }
 
-    private String currency;
-
-    public AccountQueryDTO(String id) {
-        this.id = id;
+    public AccountCreatedItemEvent(String id, String test) {
+        super(id);
+        this.test = test;
     }
 }

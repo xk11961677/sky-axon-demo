@@ -20,23 +20,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.api.query;
+package com.sky.axon.query.model;
 
+import lombok.Builder;
 import lombok.Data;
 
 /**
  * @author
  */
 @Data
-public class AccountQueryDTO {
+@Builder
+//@Document(collection ="t_#{@customSpecialProvider.getTargetCollectionName()}")
+public class AccountItem {
 
     private String id;
 
-    private Double startingBalance;
-
-    private String currency;
-
-    public AccountQueryDTO(String id) {
-        this.id = id;
-    }
+    private String test;
 }

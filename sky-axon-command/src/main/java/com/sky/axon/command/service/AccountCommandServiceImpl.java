@@ -24,23 +24,25 @@ package com.sky.axon.command.service;
 
 import com.sky.axon.api.commands.AccountDTO;
 import com.sky.axon.api.commands.EventDTO;
-import com.sky.axon.common.config.axon.CustomSpringAggregateSnapshotter;
 import com.sky.axon.command.core.aggregate.AccountAggregate;
 import com.sky.axon.command.core.command.CreateAccountCommand;
 import com.sky.axon.command.core.command.ModifyAccountCommand;
 import com.sky.axon.command.core.command.RemoveAccountCommand;
 import com.sky.axon.common.config.axon.CustomMongoEventStorageEngine;
+import com.sky.axon.common.config.axon.CustomSpringAggregateSnapshotter;
 import com.sky.axon.common.constant.AxonExtendConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.eventhandling.DomainEventMessage;
 import org.axonframework.eventsourcing.eventstore.DomainEventStream;
 import org.axonframework.messaging.MetaData;
+import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -54,18 +56,34 @@ public class AccountCommandServiceImpl implements AccountCommandService {
     private CommandGateway commandGateway;
 
     @Resource
+    private QueryGateway queryGateway;
+
+    @Resource
     private CustomMongoEventStorageEngine eventStore;
 
     @Resource
     private CustomSpringAggregateSnapshotter snapshotter;
 
+
     @Override
-    public String createAccount(AccountDTO accountCreateDTO) {
-        CreateAccountCommand createAccountCommand = new CreateAccountCommand(UUID.randomUUID().toString(),
+    public String createAccount(AccountDTO accountCreateDTO) throws ExecutionException, InterruptedException {
+        String id = UUID.randomUUID().toString();
+        /*SubscriptionQueryResult<String, Account> queryResult = queryGateway.subscriptionQuery(new AccountQueryDTO(id),
+                ResponseTypes.instanceOf(String.class),
+                ResponseTypes.instanceOf(Account.class)
+        );*/
+        CreateAccountCommand createAccountCommand = new CreateAccountCommand(id,
                 accountCreateDTO.getStartingBalance(),
                 accountCreateDTO.getCurrency(),
                 accountCreateDTO.getAddress());
         CompletableFuture<String> result = commandGateway.send(createAccountCommand);
+//        try {
+//            Account account = queryResult.updates().blockFirst();
+//            return account.getId();
+//        } finally {
+//            queryResult.close();
+//        }
+        log.info("=========aaaaaaaaaaaa=======>>:{}", result.isCompletedExceptionally());
         return result.join();
     }
 
@@ -76,8 +94,10 @@ public class AccountCommandServiceImpl implements AccountCommandService {
                 accountCreateDTO.getCurrency(),
                 accountCreateDTO.getAddress(),
                 accountCreateDTO.getReversion());
-        CompletableFuture<String> result = commandGateway.send(modifyAccountCommand);
-        return result.join();
+        commandGateway.send(modifyAccountCommand, (commandMessage, commandResultMessage) -> {
+            int a = 1 / 0;
+        });
+        return "1";
     }
 
     @Override

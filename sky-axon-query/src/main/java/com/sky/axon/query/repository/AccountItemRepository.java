@@ -20,23 +20,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.api.query;
+package com.sky.axon.query.repository;
 
-import lombok.Data;
+import com.sky.axon.query.model.AccountItem;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
  * @author
  */
-@Data
-public class AccountQueryDTO {
+public interface AccountItemRepository extends MongoRepository<AccountItem, String> {
 
-    private String id;
-
-    private Double startingBalance;
-
-    private String currency;
-
-    public AccountQueryDTO(String id) {
-        this.id = id;
-    }
 }

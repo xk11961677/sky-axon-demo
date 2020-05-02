@@ -41,7 +41,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class AxonDemoApplication {
 
     @Bean
-    MongoTransactionManager transactionManager(MongoDbFactory factory){
+    MongoTransactionManager transactionManager(MongoDbFactory factory) {
         return new MongoTransactionManager(factory);
     }
 

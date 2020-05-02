@@ -26,6 +26,7 @@ import com.sky.axon.api.commands.AccountDTO;
 import com.sky.axon.api.commands.EventDTO;
 import com.sky.axon.command.service.AccountCommandService;
 import io.swagger.annotations.Api;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +40,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping(value = "/bank-accounts")
 @Api(value = "Account Commands", description = "Account Commands Related Endpoints", tags = "Account Commands")
+@Slf4j
 public class AccountCommandController {
 
     @Resource
@@ -51,8 +53,10 @@ public class AccountCommandController {
      * @return
      */
     @PostMapping("/createAccount")
-    public String createAccount(@RequestBody AccountDTO accountDTO) {
-        return accountCommandService.createAccount(accountDTO);
+    public String createAccount(@RequestBody AccountDTO accountDTO) throws Exception {
+        String account = accountCommandService.createAccount(accountDTO);
+        log.info("=======fdsfdsfdsfdsfsd========>>:{}", account);
+        return account;
     }
 
     @PostMapping(value = "/modifyAccount")

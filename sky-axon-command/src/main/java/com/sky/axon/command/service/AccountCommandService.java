@@ -25,6 +25,8 @@ package com.sky.axon.command.service;
 import com.sky.axon.api.commands.AccountDTO;
 import com.sky.axon.api.commands.EventDTO;
 
+import java.util.concurrent.ExecutionException;
+
 /**
  * @author
  */
@@ -36,7 +38,7 @@ public interface AccountCommandService {
      * @param accountCreateDTO
      * @return
      */
-    String createAccount(AccountDTO accountCreateDTO);
+    String createAccount(AccountDTO accountCreateDTO) throws ExecutionException, InterruptedException;
 
     /**
      * 更新账号

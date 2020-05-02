@@ -27,9 +27,6 @@ import com.sky.axon.common.config.axon.CustomDocumentPerEventStorageStrategy;
 import com.sky.axon.common.config.axon.CustomEventEntryConfiguration;
 import com.sky.axon.common.config.axon.CustomMongoEventStorageEngine;
 import com.sky.axon.common.config.axon.CustomSpringAggregateSnapshotter;
-import org.axonframework.commandhandling.CommandBus;
-import org.axonframework.common.transaction.TransactionManager;
-import org.axonframework.disruptor.commandhandling.DisruptorCommandBus;
 import org.axonframework.eventsourcing.EventCountSnapshotTriggerDefinition;
 import org.axonframework.eventsourcing.SnapshotTriggerDefinition;
 import org.axonframework.eventsourcing.eventstore.EventStore;
@@ -37,12 +34,9 @@ import org.axonframework.extensions.mongo.DefaultMongoTemplate;
 import org.axonframework.extensions.mongo.MongoTemplate;
 import org.axonframework.extensions.mongo.eventhandling.saga.repository.MongoSagaStore;
 import org.axonframework.extensions.mongo.eventsourcing.tokenstore.MongoTokenStore;
-import org.axonframework.messaging.interceptors.CorrelationDataInterceptor;
-import org.axonframework.messaging.interceptors.LoggingInterceptor;
 import org.axonframework.modelling.saga.repository.SagaStore;
 import org.axonframework.serialization.Serializer;
 import org.axonframework.serialization.json.JacksonSerializer;
-import org.axonframework.spring.config.AxonConfiguration;
 import org.axonframework.springboot.autoconfig.AxonAutoConfiguration;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
@@ -111,7 +105,7 @@ public class AxonConfig implements ApplicationContextAware {
         return config;
     }*/
 
-    @Bean
+    /*@Bean
     public CommandBus customCommandBus(TransactionManager txManager, AxonConfiguration axonConfiguration) {
         DisruptorCommandBus commandBus =
                 DisruptorCommandBus.builder()
@@ -122,7 +116,7 @@ public class AxonConfig implements ApplicationContextAware {
         commandBus.registerHandlerInterceptor(new LoggingInterceptor());
         commandBus.registerDispatchInterceptor(new LoggingInterceptor());
         return commandBus;
-    }
+    }*/
 
     @Bean
     public CustomSpringAggregateSnapshotter customSpringAggregateSnapshotter(EventStore eventStore) {

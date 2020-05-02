@@ -22,6 +22,8 @@
  */
 package com.sky.axon.query;
 
+import com.sky.axon.api.query.AccountQueryDTO;
+import com.sky.axon.common.exception.BusinessException;
 import com.sky.axon.events.AccountCreatedEvent;
 import com.sky.axon.events.AccountModifiedEvent;
 import com.sky.axon.events.AccountRemovedEvent;
@@ -32,6 +34,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.axonframework.config.ProcessingGroup;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.SequenceNumber;
+import org.axonframework.messaging.unitofwork.CurrentUnitOfWork;
+import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -53,6 +57,9 @@ public class AccountListener {
     @Resource
     private AccountTestRepository accountTestRepository;
 
+    @Resource
+    private QueryUpdateEmitter queryUpdateEmitter;
+
     /**
      * 创建账号业务逻辑
      * 异步创建
@@ -60,8 +67,14 @@ public class AccountListener {
      * @param accountCreatedEvent
      */
     @EventHandler
-    protected void on(AccountCreatedEvent accountCreatedEvent, @SequenceNumber Long sequence) {
-        log.info("===>>EventHandler AccountCreatedEvent: "+sequence+"{}", accountCreatedEvent);
+    protected void on(AccountCreatedEvent accountCreatedEvent, @SequenceNumber Long sequence) throws Exception {
+        log.info("===>>EventHandler AccountCreatedEvent: " + sequence + "{}", accountCreatedEvent);
+
+        /*try {
+            int a = 1 / 0;
+        } catch (Exception e) {
+            throw new BusinessException(e);
+        }*/
         Account account = Account.builder()
                 .id(accountCreatedEvent.id)
                 .accountBalance(accountCreatedEvent.accountBalance)
@@ -71,7 +84,19 @@ public class AccountListener {
                 .build();
 //        DataSourceContext.setDataSource("111111111");
         //accountMongodbDao.save(account);
+        int a = 1/0;
         accountTestRepository.save(account);
+
+        /* sending it to subscription queries of type FindCustomerQuery, but only if the customer id matches. */
+        queryUpdateEmitter.emit(AccountQueryDTO.class,
+                query -> query.getId().equals(accountCreatedEvent.id),account);
+        /* sending it to subscription queries of type FindAllCustomers. */
+        /*queryUpdateEmitter.emit(FindAllCustomersQuery.class,
+                query -> true,
+                record);*/
+        CurrentUnitOfWork.get().parent().get().rollback();
+        CurrentUnitOfWork.get().rollback();
+        System.out.println(CurrentUnitOfWork.isStarted());
     }
 
     /**
@@ -80,8 +105,13 @@ public class AccountListener {
      * @param accountModifiedEvent
      */
     @EventHandler
-    protected void on(AccountModifiedEvent accountModifiedEvent,@SequenceNumber Long sequence) {
-        log.info("===>>EventHandler AccountModifiedEvent: "+sequence+" {}", accountModifiedEvent);
+    protected void on(AccountModifiedEvent accountModifiedEvent, @SequenceNumber Long sequence) {
+        log.info("===>>EventHandler AccountModifiedEvent: " + sequence + " {}", accountModifiedEvent);
+        try {
+            int a = 1 / 0;
+        } catch (Exception e) {
+            throw new BusinessException(e);
+        }
         Account account = Account.builder()
                 .accountBalance(accountModifiedEvent.accountBalance)
                 .currency(accountModifiedEvent.currency)

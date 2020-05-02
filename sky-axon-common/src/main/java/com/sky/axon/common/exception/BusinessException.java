@@ -20,23 +20,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sky.axon.api.query;
+package com.sky.axon.common.exception;
 
-import lombok.Data;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
+ * 业务异常
+ *
  * @author
  */
-@Data
-public class AccountQueryDTO {
+public class BusinessException extends RuntimeException {
+    private static final long serialVersionUID = -1L;
+    /**
+     * 异常码
+     */
+    @Getter
+    @Setter
+    protected String code;
 
-    private String id;
+    public BusinessException() {
+    }
 
-    private Double startingBalance;
+    public BusinessException(Throwable cause) {
+        super(cause);
+    }
 
-    private String currency;
+    public BusinessException(String message) {
+        super(message);
+    }
 
-    public AccountQueryDTO(String id) {
-        this.id = id;
+    public BusinessException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public BusinessException(String code, String message) {
+        super(message);
+        this.code = code;
+    }
+
+    public BusinessException(String code, String msgFormat, Object... args) {
+        super(String.format(msgFormat, args));
+        this.code = code;
     }
 }

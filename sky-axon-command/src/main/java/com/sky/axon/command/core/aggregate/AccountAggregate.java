@@ -38,9 +38,11 @@ import org.axonframework.eventsourcing.EventSourcedAggregate;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.messaging.MetaData;
 import org.axonframework.modelling.command.AggregateIdentifier;
+import org.axonframework.modelling.command.AggregateMember;
 import org.axonframework.modelling.command.ApplyMore;
 import org.axonframework.spring.stereotype.Aggregate;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +71,9 @@ public class AccountAggregate {
 
     private Integer disabled = 0;
 
+    @AggregateMember
+    private List<AccountItemAggregate> accountItemAggregates = new ArrayList<>();
+
     @CommandHandler
     public AccountAggregate(CreateAccountCommand createAccountCommand) {
         //axon默认使用java util uuid
@@ -78,6 +83,8 @@ public class AccountAggregate {
         //map.put(AxonExtendConstants.TAG, "tag_1");
         map.put(AxonExtendConstants.TENANT_CODE, "tenantCode_1");
         //map.put(AxonExtendConstants.REVERSION, "v1");
+        //commandGateway.sendAndWait(new CreateAccountItemCommand(UUID.randomUUID().toString(),"test"));
+
         ApplyMore apply = apply(new AccountCreatedEvent(createAccountCommand.id, createAccountCommand.accountBalance, createAccountCommand.currency, createAccountCommand.address, 0), MetaData.from(map));
         EventSourcedAggregate aggregate = (EventSourcedAggregate) apply;
         Long version = aggregate.version();
@@ -86,6 +93,7 @@ public class AccountAggregate {
         }
         System.out.println(version);
     }
+
 
     /**
      * 修改账号发送事件
@@ -109,6 +117,7 @@ public class AccountAggregate {
         Long version = aggregate.version();
         System.out.println(version);
     }
+
 
     /**
      * 溯源使用,将变化必须在此处写一遍
