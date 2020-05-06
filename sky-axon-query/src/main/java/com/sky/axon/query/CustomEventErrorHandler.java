@@ -39,7 +39,8 @@ public class CustomEventErrorHandler implements ListenerInvocationErrorHandler {
                     eventMessage.getIdentifier(),
                     eventMessage.getPayloadType().getName(),
                     exception);
-            GenericDomainEventMessage genericDomainEventMessage = (GenericDomainEventMessage) eventMessage;
+            if (eventMessage instanceof GenericDomainEventMessage) {
+                GenericDomainEventMessage genericDomainEventMessage = (GenericDomainEventMessage) eventMessage;
             /*
             //直接删除
             defaultMongoTemplate.eventCollection().deleteOne(and(
@@ -47,16 +48,20 @@ public class CustomEventErrorHandler implements ListenerInvocationErrorHandler {
                 eq("sequenceNumber", genericDomainEventMessage.getSequenceNumber()),
                 eq("type", genericDomainEventMessage.getType())));*/
 
-            //更新字段 + _REMOVE
-            Bson filter = and(eq("aggregateIdentifier", genericDomainEventMessage.getAggregateIdentifier()),
-                    eq("sequenceNumber", genericDomainEventMessage.getSequenceNumber()),
-                    eq("type", genericDomainEventMessage.getType()));
+                //更新字段 + _REMOVE
+                Bson filter = and(eq("aggregateIdentifier", genericDomainEventMessage.getAggregateIdentifier()),
+                        eq("sequenceNumber", genericDomainEventMessage.getSequenceNumber()),
+                        eq("type", genericDomainEventMessage.getType()));
 
-            Bson update = new Document("$set",
-                    new Document()
-                            .append("aggregateIdentifier", genericDomainEventMessage.getAggregateIdentifier() + "_REMOVE")
-                            .append("type", genericDomainEventMessage.getType() + "_REMOVE"));
-            defaultMongoTemplate.eventCollection().updateOne(filter, update);
+                Bson update = new Document("$set",
+                        new Document()
+                                .append("aggregateIdentifier", genericDomainEventMessage.getAggregateIdentifier() + "_REMOVE")
+                                .append("type", genericDomainEventMessage.getType() + "_REMOVE"));
+                defaultMongoTemplate.eventCollection().updateOne(filter, update);
+            } else {
+                log.warn("EventListener [{}] failed to delete axon event collection [{}] ({})", eventMessageHandler.getClass().getSimpleName(),
+                        eventMessage.getIdentifier(), eventMessage.getPayloadType().getName());
+            }
         } finally {
             throw exception;
         }
