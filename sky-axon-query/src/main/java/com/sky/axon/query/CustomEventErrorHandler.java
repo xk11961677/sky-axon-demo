@@ -1,6 +1,7 @@
 package com.sky.axon.query;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.axonframework.eventhandling.EventMessage;
 import org.axonframework.eventhandling.EventMessageHandler;
 import org.axonframework.eventhandling.GenericDomainEventMessage;
@@ -11,6 +12,7 @@ import org.bson.conversions.Bson;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
@@ -49,14 +51,15 @@ public class CustomEventErrorHandler implements ListenerInvocationErrorHandler {
                 eq("type", genericDomainEventMessage.getType())));*/
 
                 //更新字段 + _REMOVE
+                String version = DateFormatUtils.format(new Date(), "yyyyMMddHHmmsssss");
                 Bson filter = and(eq("aggregateIdentifier", genericDomainEventMessage.getAggregateIdentifier()),
                         eq("sequenceNumber", genericDomainEventMessage.getSequenceNumber()),
                         eq("type", genericDomainEventMessage.getType()));
 
                 Bson update = new Document("$set",
                         new Document()
-                                .append("aggregateIdentifier", genericDomainEventMessage.getAggregateIdentifier() + "_REMOVE")
-                                .append("type", genericDomainEventMessage.getType() + "_REMOVE"));
+                                .append("aggregateIdentifier", genericDomainEventMessage.getAggregateIdentifier() + "_REMOVE_" + version)
+                                .append("type", genericDomainEventMessage.getType() + "_REMOVE_" + version));
                 defaultMongoTemplate.eventCollection().updateOne(filter, update);
             } else {
                 log.warn("EventListener [{}] failed to delete axon event collection [{}] ({})", eventMessageHandler.getClass().getSimpleName(),
