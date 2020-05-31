@@ -23,14 +23,31 @@
 package com.sky.axon.command;
 
 import com.sky.axon.command.filter.RequestWrapperFilter;
+import org.axonframework.commandhandling.CommandBus;
+import org.axonframework.commandhandling.SimpleCommandBus;
+import org.axonframework.commandhandling.distributed.AnnotationRoutingStrategy;
+import org.axonframework.commandhandling.distributed.CommandBusConnector;
+import org.axonframework.commandhandling.distributed.CommandRouter;
+import org.axonframework.commandhandling.distributed.DistributedCommandBus;
+import org.axonframework.extensions.springcloud.commandhandling.SpringCloudCommandRouter;
+import org.axonframework.extensions.springcloud.commandhandling.SpringHttpCommandBusConnector;
+import org.axonframework.serialization.Serializer;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.client.RestOperations;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * @author
@@ -38,6 +55,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication(scanBasePackages = "com.sky.axon")
 @EnableMongoRepositories(basePackages = "com.sky.axon.query.repository")
 @EnableTransactionManagement
+@EnableDiscoveryClient
 public class AxonDemoApplication {
 
     @Bean
@@ -56,5 +74,50 @@ public class AxonDemoApplication {
         bean.addUrlPatterns("/bank-accounts/*");
         return bean;
     }
+
+    @Bean
+    @LoadBalanced
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
+    // Example function providing a Spring Cloud Connector
+    @Bean
+    public CommandRouter springCloudCommandRouter(DiscoveryClient discoveryClient, Registration localServiceInstance) {
+        return SpringCloudCommandRouter.builder()
+                .discoveryClient(discoveryClient)
+                .routingStrategy(new AnnotationRoutingStrategy())
+                .localServiceInstance(localServiceInstance)
+                .build();
+    }
+
+    @Bean
+    public CommandBusConnector springHttpCommandBusConnector(
+            @Qualifier("localSegment") CommandBus localSegment,
+            RestOperations restOperations,
+            Serializer serializer) {
+        return SpringHttpCommandBusConnector.builder()
+                .localCommandBus(localSegment)
+                .restOperations(restOperations)
+                .serializer(serializer)
+                .build();
+    }
+
+    @Primary // to make sure this CommandBus implementation is used for autowiring
+    @Bean
+    public DistributedCommandBus springCloudDistributedCommandBus(CommandRouter commandRouter,
+                                                                  CommandBusConnector commandBusConnector) {
+        return DistributedCommandBus.builder()
+                .commandRouter(commandRouter)
+                .connector(commandBusConnector)
+                .build();
+    }
+
+    @Bean
+    @Qualifier("localSegment")
+    public CommandBus localSegment() {
+        return SimpleCommandBus.builder().build();
+    }
+
 }
 

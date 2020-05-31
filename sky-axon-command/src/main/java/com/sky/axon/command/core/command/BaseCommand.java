@@ -25,11 +25,13 @@ package com.sky.axon.command.core.command;
 
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
+import java.io.Serializable;
+
 /**
  * @param <T>
  * @author
  */
-public class BaseCommand<T> {
+public class BaseCommand<T> implements Serializable {
 
     @TargetAggregateIdentifier
     public final T id;

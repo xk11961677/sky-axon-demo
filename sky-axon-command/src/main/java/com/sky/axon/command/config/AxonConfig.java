@@ -27,6 +27,7 @@ import com.sky.axon.common.config.axon.CustomDocumentPerEventStorageStrategy;
 import com.sky.axon.common.config.axon.CustomEventEntryConfiguration;
 import com.sky.axon.common.config.axon.CustomMongoEventStorageEngine;
 import com.sky.axon.common.config.axon.CustomSpringAggregateSnapshotter;
+import org.axonframework.config.EventProcessingConfigurer;
 import org.axonframework.eventsourcing.EventCountSnapshotTriggerDefinition;
 import org.axonframework.eventsourcing.SnapshotTriggerDefinition;
 import org.axonframework.eventsourcing.eventstore.EventStore;
@@ -140,6 +141,11 @@ public class AxonConfig implements ApplicationContextAware {
         return new EventCountSnapshotTriggerDefinition(customSpringAggregateSnapshotter(eventStore), 3);
     }
 
+    @Bean
+    public EventProcessingConfigurer eventProcessingConfigurer(EventProcessingConfigurer eventProcessingConfigurer) {
+        eventProcessingConfigurer.usingSubscribingEventProcessors();
+        return eventProcessingConfigurer;
+    }
 
     @Primary
     @Bean

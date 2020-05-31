@@ -84,7 +84,7 @@ public class AccountListener {
                 .build();
 //        DataSourceContext.setDataSource("111111111");
         //accountMongodbDao.save(account);
-        int a = 1/0;
+        //int a = 1/0;
         accountTestRepository.save(account);
 
         /* sending it to subscription queries of type FindCustomerQuery, but only if the customer id matches. */

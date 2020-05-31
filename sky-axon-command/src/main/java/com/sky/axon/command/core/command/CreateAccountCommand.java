@@ -24,6 +24,7 @@ package com.sky.axon.command.core.command;
 
 import com.sky.axon.api.commands.AddressDTO;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -31,7 +32,7 @@ import java.util.List;
  *
  * @author
  */
-public class CreateAccountCommand extends BaseCommand<String> {
+public class CreateAccountCommand extends BaseCommand<String> implements Serializable {
 
     public final String accountBalance;
 

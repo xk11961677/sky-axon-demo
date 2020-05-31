@@ -15,6 +15,7 @@
 
     <properties>
         <spring-boot.version>2.1.4.RELEASE</spring-boot.version>
+        <spring-cloud.version>Greenwich.SR3</spring-cloud.version>
         <springfox.version>2.9.2</springfox.version>
         <swagger-bootstrap-ui.version>1.8.7</swagger-bootstrap-ui.version>
         <lombok.version>1.16.14</lombok.version>
@@ -42,6 +43,14 @@
                 <scope>import</scope>
             </dependency>
 
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <!-- the 3rd part -->
             <dependency>
                 <groupId>com.alibaba</groupId>
@@ -51,16 +60,16 @@
 
             <!-- Axon Framework -->
 
-            <dependency>
+            <!--<dependency>
                 <groupId>org.axonframework</groupId>
                 <artifactId>axon-spring</artifactId>
                 <version>4.2.1</version>
-            </dependency>
+            </dependency>-->
 
             <dependency>
                 <groupId>org.axonframework</groupId>
                 <artifactId>axon-spring-boot-starter</artifactId>
-                <version>4.2.1</version>
+                <version>4.3.1</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.axonframework</groupId>
@@ -72,7 +81,7 @@
             <dependency>
                 <groupId>org.axonframework.extensions.springcloud</groupId>
                 <artifactId>axon-springcloud</artifactId>
-                <version>4.2</version>
+                <version>4.3</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>axon-messaging</artifactId>
@@ -81,10 +90,16 @@
                 </exclusions>
             </dependency>
 
+            <!--<dependency>
+                <groupId>org.axonframework</groupId>
+                <artifactId>axon-distributed-commandbus-springcloud</artifactId>
+                <version>4.2</version>
+            </dependency>-->
+
             <dependency>
                 <groupId>org.axonframework.extensions.mongo</groupId>
                 <artifactId>axon-mongo</artifactId>
-                <version>4.2</version>
+                <version>4.3</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>mongo-java-driver</artifactId>

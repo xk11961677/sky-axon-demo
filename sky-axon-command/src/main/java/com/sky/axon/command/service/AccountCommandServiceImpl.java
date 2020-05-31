@@ -76,7 +76,7 @@ public class AccountCommandServiceImpl implements AccountCommandService {
                 accountCreateDTO.getStartingBalance(),
                 accountCreateDTO.getCurrency(),
                 accountCreateDTO.getAddress());
-        CompletableFuture<String> result = commandGateway.send(createAccountCommand);
+        CompletableFuture<String> result = commandGateway.sendAndWait(createAccountCommand);
 //        try {
 //            Account account = queryResult.updates().blockFirst();
 //            return account.getId();
