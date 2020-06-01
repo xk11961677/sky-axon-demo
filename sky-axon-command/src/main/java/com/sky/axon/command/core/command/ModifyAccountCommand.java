@@ -31,15 +31,20 @@ import java.util.List;
  *
  * @author
  */
+
 public class ModifyAccountCommand extends BaseCommand<String> {
 
-    public final String accountBalance;
+    public String accountBalance;
 
-    public final String currency;
+    public String currency;
 
-    public final List<AddressDTO> address;
+    public List<AddressDTO> address;
 
-    public final String reversion;
+    public String reversion;
+
+    public ModifyAccountCommand() {
+        super();
+    }
 
     public ModifyAccountCommand(String id, String accountBalance, String currency,
                                 List<AddressDTO> address, String reversion) {

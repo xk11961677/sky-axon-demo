@@ -36,7 +36,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 /**
  * @author
  */
-@SpringBootApplication(scanBasePackages = "com.sky.axon")
+@SpringBootApplication(scanBasePackages = {"com.sky.axon"})
 @EnableMongoRepositories(basePackages = "com.sky.axon.query.repository")
 @EnableTransactionManagement
 @EnableDiscoveryClient
@@ -58,5 +58,6 @@ public class AxonDemoApplication {
         bean.addUrlPatterns("/bank-accounts/*");
         return bean;
     }
+
 }
 

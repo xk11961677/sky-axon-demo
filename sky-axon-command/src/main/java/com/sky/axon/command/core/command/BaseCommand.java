@@ -34,7 +34,10 @@ import java.io.Serializable;
 public class BaseCommand<T> implements Serializable {
 
     @TargetAggregateIdentifier
-    public final T id;
+    public T id;
+
+    public BaseCommand() {
+    }
 
     public BaseCommand(T id) {
         this.id = id;

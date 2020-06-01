@@ -30,6 +30,7 @@ import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.messaging.MetaData;
 import org.axonframework.modelling.command.Aggregate;
 import org.axonframework.modelling.command.Repository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -45,6 +46,9 @@ public class AccountCommandHandler {
     @Resource(name = "accountAggregateRepository")
     private Repository<AccountAggregate> repository;
 
+
+    @Value("${server.port}")
+    private String port;
 
     /**
      * 新增账号信息
@@ -64,7 +68,7 @@ public class AccountCommandHandler {
      */
     @CommandHandler
     protected String handle(ModifyAccountCommand modifyAccountCommand, MetaData metaData) {
-
+        log.info("=====>> port:{}", port);
         Aggregate<AccountAggregate> aggregate = repository.load(modifyAccountCommand.id);
         aggregate.execute(accountAggregate -> accountAggregate.modifyAccount(modifyAccountCommand));
         return aggregate.identifierAsString();

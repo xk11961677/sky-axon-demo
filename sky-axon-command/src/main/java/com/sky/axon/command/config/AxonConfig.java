@@ -130,7 +130,7 @@ public class AxonConfig implements ApplicationContextAware {
         });
         CustomSpringAggregateSnapshotter snapshotter = CustomSpringAggregateSnapshotter.builder()
                 .eventStore(eventStore)
-                .executor(threadPoolExecutor)
+//                .executor(threadPoolExecutor)
                 .build();
         snapshotter.setApplicationContext(applicationContext);
         return snapshotter;

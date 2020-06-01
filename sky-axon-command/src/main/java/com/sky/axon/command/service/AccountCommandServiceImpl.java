@@ -76,7 +76,7 @@ public class AccountCommandServiceImpl implements AccountCommandService {
                 accountCreateDTO.getStartingBalance(),
                 accountCreateDTO.getCurrency(),
                 accountCreateDTO.getAddress());
-        CompletableFuture<String> result = commandGateway.sendAndWait(createAccountCommand);
+        CompletableFuture<String> result = commandGateway.send(createAccountCommand);
 //        try {
 //            Account account = queryResult.updates().blockFirst();
 //            return account.getId();
@@ -94,10 +94,8 @@ public class AccountCommandServiceImpl implements AccountCommandService {
                 accountCreateDTO.getCurrency(),
                 accountCreateDTO.getAddress(),
                 accountCreateDTO.getReversion());
-        commandGateway.send(modifyAccountCommand, (commandMessage, commandResultMessage) -> {
-            int a = 1 / 0;
-        });
-        return "1";
+        CompletableFuture<String> result = commandGateway.send(modifyAccountCommand);
+        return result.join();
     }
 
     @Override

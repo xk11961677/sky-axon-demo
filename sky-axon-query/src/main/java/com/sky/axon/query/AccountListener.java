@@ -22,8 +22,6 @@
  */
 package com.sky.axon.query;
 
-import com.sky.axon.api.query.AccountQueryDTO;
-import com.sky.axon.common.exception.BusinessException;
 import com.sky.axon.events.AccountCreatedEvent;
 import com.sky.axon.events.AccountModifiedEvent;
 import com.sky.axon.events.AccountRemovedEvent;
@@ -34,7 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.axonframework.config.ProcessingGroup;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.SequenceNumber;
-import org.axonframework.messaging.unitofwork.CurrentUnitOfWork;
 import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.springframework.stereotype.Component;
 
@@ -88,15 +85,15 @@ public class AccountListener {
         accountTestRepository.save(account);
 
         /* sending it to subscription queries of type FindCustomerQuery, but only if the customer id matches. */
-        queryUpdateEmitter.emit(AccountQueryDTO.class,
-                query -> query.getId().equals(accountCreatedEvent.id),account);
+        /*queryUpdateEmitter.emit(AccountQueryDTO.class,
+                query -> query.getId().equals(accountCreatedEvent.id),account);*/
         /* sending it to subscription queries of type FindAllCustomers. */
         /*queryUpdateEmitter.emit(FindAllCustomersQuery.class,
                 query -> true,
                 record);*/
-        CurrentUnitOfWork.get().parent().get().rollback();
+        /*CurrentUnitOfWork.get().parent().get().rollback();
         CurrentUnitOfWork.get().rollback();
-        System.out.println(CurrentUnitOfWork.isStarted());
+        System.out.println(CurrentUnitOfWork.isStarted());*/
     }
 
     /**
@@ -107,11 +104,6 @@ public class AccountListener {
     @EventHandler
     protected void on(AccountModifiedEvent accountModifiedEvent, @SequenceNumber Long sequence) {
         log.info("===>>EventHandler AccountModifiedEvent: " + sequence + " {}", accountModifiedEvent);
-        try {
-            int a = 1 / 0;
-        } catch (Exception e) {
-            throw new BusinessException(e);
-        }
         Account account = Account.builder()
                 .accountBalance(accountModifiedEvent.accountBalance)
                 .currency(accountModifiedEvent.currency)
