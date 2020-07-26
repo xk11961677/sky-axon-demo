@@ -25,10 +25,15 @@ package com.sky.axon.command.handler;
 import com.sky.axon.command.core.aggregate.AccountAggregate;
 import com.sky.axon.command.core.command.ModifyAccountCommand;
 import com.sky.axon.command.core.command.RemoveAccountCommand;
+import com.sky.axon.common.util.DataSourceContext;
+import com.sky.axon.events.AccountModifiedEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
+import org.axonframework.eventsourcing.EventSourcedAggregate;
+import org.axonframework.eventsourcing.EventSourcingRepository;
 import org.axonframework.messaging.MetaData;
 import org.axonframework.modelling.command.Aggregate;
+import org.axonframework.modelling.command.ApplyMore;
 import org.axonframework.modelling.command.Repository;
 import org.springframework.stereotype.Component;
 
@@ -43,7 +48,7 @@ public class AccountCommandHandler {
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Resource(name = "accountAggregateRepository")
-    private Repository<AccountAggregate> repository;
+    private EventSourcingRepository<AccountAggregate> repository;
 
 
     /**
@@ -64,10 +69,12 @@ public class AccountCommandHandler {
      */
     @CommandHandler
     protected String handle(ModifyAccountCommand modifyAccountCommand, MetaData metaData) {
-
-        Aggregate<AccountAggregate> aggregate = repository.load(modifyAccountCommand.id);
-        aggregate.execute(accountAggregate -> accountAggregate.modifyAccount(modifyAccountCommand));
-        return aggregate.identifierAsString();
+        String dataSource = DataSourceContext.getDataSource();
+        log.info("AccountCommandHandler.handle modify dataSource :{}", dataSource);
+        EventSourcedAggregate<AccountAggregate> wrappedAggregate = repository.load(modifyAccountCommand.id).getWrappedAggregate();
+        log.info("AccountCommandHandler");
+        ApplyMore applyMore = wrappedAggregate.doApply(new AccountModifiedEvent(modifyAccountCommand.id, modifyAccountCommand.accountBalance, modifyAccountCommand.currency, modifyAccountCommand.address, 0), MetaData.emptyInstance());
+        return ((EventSourcedAggregate) applyMore).version() + "";
     }
 
 

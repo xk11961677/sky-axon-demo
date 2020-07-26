@@ -94,9 +94,14 @@ public class AccountCommandServiceImpl implements AccountCommandService {
                 accountCreateDTO.getCurrency(),
                 accountCreateDTO.getAddress(),
                 accountCreateDTO.getReversion());
-        commandGateway.send(modifyAccountCommand, (commandMessage, commandResultMessage) -> {
-            int a = 1 / 0;
-        });
+        //commandGateway.send(modifyAccountCommand, (commandMessage, commandResultMessage) -> {
+        //int a = 1 / 0;
+        //});
+//        CompletableFuture<Object> result = commandGateway.send(modifyAccountCommand);
+
+//        return result.join()+"1";
+        Object o = commandGateway.sendAndWait(modifyAccountCommand);
+
         return "1";
     }
 

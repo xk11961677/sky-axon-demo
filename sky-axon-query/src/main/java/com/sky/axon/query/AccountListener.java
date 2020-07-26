@@ -24,6 +24,7 @@ package com.sky.axon.query;
 
 import com.sky.axon.api.query.AccountQueryDTO;
 import com.sky.axon.common.exception.BusinessException;
+import com.sky.axon.common.util.DataSourceContext;
 import com.sky.axon.events.AccountCreatedEvent;
 import com.sky.axon.events.AccountModifiedEvent;
 import com.sky.axon.events.AccountRemovedEvent;
@@ -48,7 +49,7 @@ import javax.annotation.Resource;
  */
 @Component
 @Slf4j
-@ProcessingGroup("accountListener")
+//@ProcessingGroup("accountListener")
 public class AccountListener {
 
     @Resource
@@ -68,8 +69,9 @@ public class AccountListener {
      */
     @EventHandler
     protected void on(AccountCreatedEvent accountCreatedEvent, @SequenceNumber Long sequence) throws Exception {
-        log.info("===>>EventHandler AccountCreatedEvent: " + sequence + "{}", accountCreatedEvent);
-
+//        log.info("EventHandler AccountCreatedEvent: " + sequence + "{}", accountCreatedEvent);
+        String dataSource = DataSourceContext.getDataSource();
+        log.info("EventHandler AccountCreatedEvent == "+dataSource);
         /*try {
             int a = 1 / 0;
         } catch (Exception e) {
@@ -84,8 +86,8 @@ public class AccountListener {
                 .build();
 //        DataSourceContext.setDataSource("111111111");
         //accountMongodbDao.save(account);
-        int a = 1/0;
-        accountTestRepository.save(account);
+
+//        accountTestRepository.save(account);
 
         /* sending it to subscription queries of type FindCustomerQuery, but only if the customer id matches. */
         queryUpdateEmitter.emit(AccountQueryDTO.class,
@@ -94,9 +96,9 @@ public class AccountListener {
         /*queryUpdateEmitter.emit(FindAllCustomersQuery.class,
                 query -> true,
                 record);*/
-        CurrentUnitOfWork.get().parent().get().rollback();
-        CurrentUnitOfWork.get().rollback();
-        System.out.println(CurrentUnitOfWork.isStarted());
+//        CurrentUnitOfWork.get().parent().get().rollback();
+//        CurrentUnitOfWork.get().rollback();
+//        System.out.println(CurrentUnitOfWork.isStarted());
     }
 
     /**
@@ -106,18 +108,14 @@ public class AccountListener {
      */
     @EventHandler
     protected void on(AccountModifiedEvent accountModifiedEvent, @SequenceNumber Long sequence) {
-        log.info("===>>EventHandler AccountModifiedEvent: " + sequence + " {}", accountModifiedEvent);
-        try {
-            int a = 1 / 0;
-        } catch (Exception e) {
-            throw new BusinessException(e);
-        }
+//        log.info("===>>EventHandler AccountModifiedEvent: " + sequence + " {}", accountModifiedEvent);
         Account account = Account.builder()
                 .accountBalance(accountModifiedEvent.accountBalance)
                 .currency(accountModifiedEvent.currency)
                 .address(accountModifiedEvent.address)
                 .build();
-        accountMongodbDao.updateById(accountModifiedEvent.id, account);
+        //accountMongodbDao.updateById(accountModifiedEvent.id, account);
+//        log.info("===>>EventHandler AccountModifiedEvent end: " + sequence + " {}", accountModifiedEvent);
     }
 
 

@@ -26,6 +26,7 @@ import com.sky.axon.api.commands.AddressDTO;
 import com.sky.axon.command.core.command.CreateAccountCommand;
 import com.sky.axon.command.core.command.ModifyAccountCommand;
 import com.sky.axon.command.core.command.RemoveAccountCommand;
+import com.sky.axon.common.config.mongo.DataSourceContext;
 import com.sky.axon.common.constant.AxonExtendConstants;
 import com.sky.axon.events.AccountCreatedEvent;
 import com.sky.axon.events.AccountModifiedEvent;
@@ -88,10 +89,10 @@ public class AccountAggregate {
         ApplyMore apply = apply(new AccountCreatedEvent(createAccountCommand.id, createAccountCommand.accountBalance, createAccountCommand.currency, createAccountCommand.address, 0), MetaData.from(map));
         EventSourcedAggregate aggregate = (EventSourcedAggregate) apply;
         Long version = aggregate.version();
-        if(version == null) {
-            version =  0L;
+        if (version == null) {
+            version = 0L;
         }
-        System.out.println(version);
+//        log.info(""+version);
     }
 
 
@@ -105,17 +106,20 @@ public class AccountAggregate {
         //map.put(AxonExtendConstants.TAG, "tag_1");
         map.put(AxonExtendConstants.TENANT_CODE, "tenantCode_1");
         //map.put(AxonExtendConstants.REVERSION, modifyAccountCommand.reversion);
+        String dataSource = DataSourceContext.getDataSource();
+        log.info("accountAggregate dataSource  :{} ", dataSource);
+
         ApplyMore apply = apply(new AccountModifiedEvent(modifyAccountCommand.id, modifyAccountCommand.accountBalance, modifyAccountCommand.currency, modifyAccountCommand.address, 0), MetaData.from(map));
         EventSourcedAggregate aggregate = (EventSourcedAggregate) apply;
         Long version = aggregate.version();
-        System.out.println(version);
+//        log.info(""+version);
     }
 
     public void removeAccount(RemoveAccountCommand removeAccountCommand) {
         ApplyMore apply = apply(new AccountRemovedEvent(removeAccountCommand.id, 1));
         EventSourcedAggregate aggregate = (EventSourcedAggregate) apply;
         Long version = aggregate.version();
-        System.out.println(version);
+//        log.info(""+version);
     }
 
 
@@ -131,7 +135,7 @@ public class AccountAggregate {
         this.currency = accountCreatedEvent.currency;
         this.address = accountCreatedEvent.address;
         this.disabled = accountCreatedEvent.disabled;
-        log.info("====================>>EventSourcingHandler AccountCreatedEvent :{}", accountCreatedEvent);
+//        log.info("====================>>EventSourcingHandler AccountCreatedEvent :{}", accountCreatedEvent);
     }
 
     @EventSourcingHandler
@@ -141,7 +145,7 @@ public class AccountAggregate {
         this.accountBalance = accountModifiedEvent.accountBalance;
         this.address = accountModifiedEvent.address;
         this.disabled = accountModifiedEvent.disabled;
-        log.info("====================>>EventSourcingHandler AccountModifiedEvent :{}", accountModifiedEvent);
+//        log.info("====================>>EventSourcingHandler AccountModifiedEvent :{}", accountModifiedEvent);
     }
 
     @EventSourcingHandler
@@ -149,6 +153,6 @@ public class AccountAggregate {
         this.id = accountRemovedEvent.id;
         this.disabled = accountRemovedEvent.disabled;
         /*markDeleted();*/
-        log.info("====================>>EventSourcingHandler AccountRemovedEvent :{}", accountRemovedEvent);
+//        log.info("====================>>EventSourcingHandler AccountRemovedEvent :{}", accountRemovedEvent);
     }
 }

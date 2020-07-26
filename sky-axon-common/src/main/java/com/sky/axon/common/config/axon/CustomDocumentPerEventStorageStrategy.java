@@ -28,9 +28,11 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Sorts;
+import com.sky.axon.common.config.mongo.DataSourceContext;
 import com.sky.axon.common.constant.AxonExtendConstants;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.DomainEventData;
 import org.axonframework.eventhandling.DomainEventMessage;
 import org.axonframework.eventhandling.EventMessage;
@@ -53,6 +55,7 @@ import static java.util.stream.StreamSupport.stream;
 /**
  * @author
  */
+@Slf4j
 public class CustomDocumentPerEventStorageStrategy extends DocumentPerEventStorageStrategy {
 
     @Getter
@@ -102,6 +105,9 @@ public class CustomDocumentPerEventStorageStrategy extends DocumentPerEventStora
 
     @Override
     public void appendSnapshot(MongoCollection<Document> snapshotCollection, DomainEventMessage<?> snapshot, Serializer serializer) {
+        String dataSource = DataSourceContext.getDataSource();
+        log.info("DocumentPerEventStorage == "+dataSource);
+
         MetaData metaData = snapshot.getMetaData();
         if (!StringUtils.isEmpty(metaData.get(AxonExtendConstants.TAG))) {
             Document snapshotDocument = this.createSnapshotDocument(snapshot, serializer);

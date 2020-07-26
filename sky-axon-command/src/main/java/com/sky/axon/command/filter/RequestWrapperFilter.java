@@ -22,6 +22,7 @@
  */
 package com.sky.axon.command.filter;
 
+import com.sky.axon.common.util.DataSourceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -31,6 +32,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * @author
@@ -43,10 +45,12 @@ public class RequestWrapperFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         ServletRequest requestWrapper = new BodyReaderHttpServletRequestWrapper(request);
         String tenantCode = requestWrapper.getParameter("tenantCode");
-        try{
+        DataSourceContext.setDataSource(UUID.randomUUID() + "");
+        try {
             filterChain.doFilter(requestWrapper, response);
-        }finally {
+        } finally {
             log.info("request wrapper filter tenantCode :{} ", tenantCode);
+            DataSourceContext.clearDataSource();
         }
     }
 

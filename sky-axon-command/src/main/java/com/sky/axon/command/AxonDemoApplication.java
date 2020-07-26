@@ -40,12 +40,13 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class AxonDemoApplication {
 
-    @Bean
-    MongoTransactionManager transactionManager(MongoDbFactory factory) {
-        return new MongoTransactionManager(factory);
-    }
+//    @Bean
+//    MongoTransactionManager transactionManager(MongoDbFactory factory) {
+//        return new MongoTransactionManager(factory);
+//    }
 
     public static void main(String[] args) {
+        System.setProperty("spring.devtools.restart.enabled", "false");
         SpringApplication.run(AxonDemoApplication.class, args);
     }
 

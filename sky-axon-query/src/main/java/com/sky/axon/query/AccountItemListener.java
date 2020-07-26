@@ -15,7 +15,7 @@ import javax.annotation.Resource;
  */
 @Component
 @Slf4j
-@ProcessingGroup("accountItemListener")
+//@ProcessingGroup("accountItemListener")
 public class AccountItemListener {
 
     @Resource

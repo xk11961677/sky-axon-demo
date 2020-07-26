@@ -22,7 +22,10 @@
  */
 package com.sky.axon.common.config.axon;
 
+import com.sky.axon.common.util.DataSourceContext;
+import lombok.extern.slf4j.Slf4j;
 import org.axonframework.common.AxonConfigurationException;
+import org.axonframework.common.transaction.NoTransactionManager;
 import org.axonframework.common.transaction.TransactionManager;
 import org.axonframework.eventhandling.DomainEventMessage;
 import org.axonframework.eventsourcing.AggregateFactory;
@@ -32,6 +35,7 @@ import org.axonframework.eventsourcing.eventstore.DomainEventStream;
 import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.axonframework.messaging.annotation.HandlerDefinition;
 import org.axonframework.messaging.annotation.ParameterResolverFactory;
+import org.axonframework.modelling.command.ConcurrencyException;
 import org.axonframework.modelling.command.RepositoryProvider;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -46,6 +50,7 @@ import java.util.function.Function;
 /**
  * @author
  */
+@Slf4j
 public class CustomSpringAggregateSnapshotter extends AggregateSnapshotter implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
@@ -57,6 +62,39 @@ public class CustomSpringAggregateSnapshotter extends AggregateSnapshotter imple
     public static CustomSpringAggregateSnapshotter.Builder builder() {
         return new CustomSpringAggregateSnapshotter.Builder();
     }
+
+    public void scheduleSnapshot(Class<?> aggregateType, String aggregateIdentifier, String dataSource) {
+        String dataSource1 = DataSourceContext.getDataSource();
+        log.info("custom snapshot datasource :{}" + dataSource1 + "==" + dataSource);
+        DataSourceContext.setDataSource(dataSource);
+        this.scheduleSnapshot(aggregateType, aggregateIdentifier);
+    }
+
+    @Override
+    public void scheduleSnapshot(Class<?> aggregateType, String aggregateIdentifier) {
+        String dataSource = DataSourceContext.getDataSource();
+        log.info("CustomSpringAggregateSnapshotter.scheduleSnapshot datasource :{}", dataSource);
+        getExecutor().execute(new SilentTask(() -> {
+            String dataSource1 = DataSourceContext.getDataSource();
+            log.info("CustomSpringAggregateSnapshotter.silentTask dataSource :{} ", dataSource1);
+            NoTransactionManager.INSTANCE.executeInTransaction(this.createSnapshotterTask(aggregateType, aggregateIdentifier));
+        }, dataSource));
+    }
+
+
+    /**
+     * Creates an instance of a task that contains the actual snapshot creation logic.
+     *
+     * @param aggregateType       The type of the aggregate to create a snapshot for
+     * @param aggregateIdentifier The identifier of the aggregate to create a snapshot for
+     * @return the task containing snapshot creation logic
+     */
+    @Override
+    protected Runnable createSnapshotterTask(Class<?> aggregateType, String aggregateIdentifier) {
+        String dataSource = DataSourceContext.getDataSource();
+        return new CreateSnapshotTask(aggregateType, aggregateIdentifier, dataSource);
+    }
+
 
     @Override
     protected AggregateFactory<?> getAggregateFactory(Class<?> aggregateType) {
@@ -95,7 +133,72 @@ public class CustomSpringAggregateSnapshotter extends AggregateSnapshotter imple
         this.applicationContext = applicationContext;
     }
 
+    private static class SilentTask implements Runnable {
+
+        private final Runnable snapshotterTask;
+
+        private final String dataSource;
+
+        private SilentTask(Runnable snapshotterTask, String dataSource) {
+            this.snapshotterTask = snapshotterTask;
+            this.dataSource = dataSource;
+        }
+
+        @Override
+        public void run() {
+            try {
+                log.info("==1==" + DataSourceContext.getDataSource());
+                DataSourceContext.setDataSource(dataSource);
+                log.info("==2==" + DataSourceContext.getDataSource());
+                snapshotterTask.run();
+                // DataSourceContext.clearDataSource();
+            } catch (ConcurrencyException e) {
+                log.info("An up-to-date snapshot entry already exists, ignoring this attempt.");
+            } catch (Exception e) {
+                if (log.isDebugEnabled()) {
+                    log.warn("An attempt to create and store a snapshot resulted in an exception:", e);
+                } else {
+                    log.warn("An attempt to create and store a snapshot resulted in an exception. " +
+                            "Exception summary: {}", e.getMessage());
+                }
+            } finally {
+                DataSourceContext.clearDataSource();
+            }
+        }
+    }
+
+
+    private final class CreateSnapshotTask implements Runnable {
+
+        private final Class<?> aggregateType;
+        private final String identifier;
+        private final String dataSource;
+
+        private CreateSnapshotTask(Class<?> aggregateType, String identifier, String dataSource) {
+            this.aggregateType = aggregateType;
+            this.identifier = identifier;
+            this.dataSource = dataSource;
+        }
+
+        @Override
+        public void run() {
+            DataSourceContext.setDataSource(dataSource);
+            log.info("CustomSrpingAggregateSnapshotter.CreateSnapshotTask datasource :{} " + dataSource);
+            DomainEventStream eventStream = getEventStore().readEvents(identifier);
+            // a snapshot should only be stored if the snapshot replaces at least more than one event
+            long firstEventSequenceNumber = eventStream.peek().getSequenceNumber();
+            DomainEventMessage snapshotEvent = createSnapshot(aggregateType, identifier, eventStream);
+            if (snapshotEvent != null && snapshotEvent.getSequenceNumber() > firstEventSequenceNumber) {
+                getEventStore().storeSnapshot(snapshotEvent);
+            }
+            DataSourceContext.clearDataSource();
+        }
+    }
+
     public static class Builder extends org.axonframework.eventsourcing.AggregateSnapshotter.Builder {
+
+        public TransactionManager transactionManager;
+
         public Builder() {
             this.aggregateFactories(Collections.emptyList());
         }
