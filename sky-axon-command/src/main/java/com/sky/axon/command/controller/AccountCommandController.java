@@ -25,17 +25,14 @@ package com.sky.axon.command.controller;
 import com.sky.axon.api.commands.AccountDTO;
 import com.sky.axon.api.commands.EventDTO;
 import com.sky.axon.command.service.AccountCommandService;
-import com.sky.axon.common.config.mongo.DataSourceContext;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.UUID;
 
 /**
  * @author

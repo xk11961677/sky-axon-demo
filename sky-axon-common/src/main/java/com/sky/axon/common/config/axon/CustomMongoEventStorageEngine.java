@@ -25,7 +25,6 @@ package com.sky.axon.common.config.axon;
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoBulkWriteException;
 import com.sky.axon.common.constant.AxonExtendConstants;
-import com.sky.axon.common.util.DataSourceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.common.AxonConfigurationException;
 import org.axonframework.common.jdbc.PersistenceExceptionResolver;
@@ -110,7 +109,6 @@ public class CustomMongoEventStorageEngine extends BatchingEventStorageEngine {
     protected void appendEvents(List<? extends EventMessage<?>> events, Serializer serializer) {
         if (!events.isEmpty()) {
             try {
-                log.info("CustomMongoEventStorageEngine dataSource :{}", DataSourceContext.getDataSource());
                 storageStrategy.appendEvents(template.eventCollection(), events, serializer);
             } catch (Exception e) {
                 handlePersistenceException(e, events.get(0));
@@ -121,8 +119,6 @@ public class CustomMongoEventStorageEngine extends BatchingEventStorageEngine {
     @Override
     protected void storeSnapshot(DomainEventMessage<?> snapshot, Serializer serializer) {
         try {
-            String dataSource = DataSourceContext.getDataSource();
-            log.info("CustomMongoEventStorageEngine.storeSnapshot() " + dataSource);
             storageStrategy.appendSnapshot(template.snapshotCollection(), snapshot, serializer);
             MetaData metaData = snapshot.getMetaData();
             if (!StringUtils.isEmpty(metaData.get(AxonExtendConstants.TAG))) {
@@ -137,14 +133,12 @@ public class CustomMongoEventStorageEngine extends BatchingEventStorageEngine {
 
     @Override
     protected Stream<? extends DomainEventData<?>> readSnapshotData(String aggregateIdentifier) {
-        log.info("CustomMongoEventStorageEngin.readSnapshotData dataSource:{} ", DataSourceContext.getDataSource());
         return storageStrategy.findSnapshots(template.snapshotCollection(), aggregateIdentifier);
     }
 
     @Override
     protected List<? extends DomainEventData<?>> fetchDomainEvents(String aggregateIdentifier, long firstSequenceNumber,
                                                                    int batchSize) {
-        log.info("CustomMongoEventStorageEngin.fetchDomainEvents dataSource:{} ", DataSourceContext.getDataSource());
         return storageStrategy.findDomainEvents(template.eventCollection(), aggregateIdentifier, firstSequenceNumber, batchSize);
     }
 
@@ -155,7 +149,6 @@ public class CustomMongoEventStorageEngine extends BatchingEventStorageEngine {
 
     @Override
     public Optional<Long> lastSequenceNumberFor(String aggregateIdentifier) {
-        log.info("CustomMongoEventStorageEngin.lastSequenceNumberFor dataSource:{} ", DataSourceContext.getDataSource());
         return storageStrategy.lastSequenceNumberFor(template.eventCollection(), aggregateIdentifier);
     }
 

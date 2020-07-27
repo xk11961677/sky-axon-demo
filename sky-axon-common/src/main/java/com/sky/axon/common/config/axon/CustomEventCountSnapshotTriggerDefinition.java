@@ -1,6 +1,5 @@
 package com.sky.axon.common.config.axon;
 
-import com.sky.axon.common.config.mongo.DataSourceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.DomainEventMessage;
 import org.axonframework.eventhandling.EventMessage;
@@ -35,7 +34,6 @@ public class CustomEventCountSnapshotTriggerDefinition implements SnapshotTrigge
 
     @Override
     public SnapshotTrigger prepareTrigger(Class<?> aggregateType) {
-        log.info("CustomEventCountSnapshotTriggerDefinition.prepareTrigger dataSource :{}", DataSourceContext.getDataSource());
         return new CustomEventCountSnapshotTriggerDefinition.EventCountSnapshotTrigger(snapshotter, aggregateType, threshold);
     }
 
@@ -64,8 +62,6 @@ public class CustomEventCountSnapshotTriggerDefinition implements SnapshotTrigge
 
         @Override
         public void eventHandled(EventMessage<?> msg) {
-            String dataSource = DataSourceContext.getDataSource();
-            log.info("CustomEventCountSnapshotTriggerDefinition eventHandled :{}", dataSource);
             if (++counter >= threshold && msg instanceof DomainEventMessage) {
                 if (CurrentUnitOfWork.isStarted()) {
                     CurrentUnitOfWork.get().onPrepareCommit(
@@ -78,12 +74,7 @@ public class CustomEventCountSnapshotTriggerDefinition implements SnapshotTrigge
         }
 
         protected void scheduleSnapshot(DomainEventMessage msg) {
-            String dataSource = DataSourceContext.getDataSource();
-            long id = Thread.currentThread().getId();
-
-            log.info("CustomEventCountSnapshotTriggerDefinition scheduleSnapshot :{} , threadId:{}", dataSource, id);
-
-            ((CustomSpringAggregateSnapshotter) snapshotter).scheduleSnapshot(aggregateType, msg.getAggregateIdentifier(), dataSource);
+            snapshotter.scheduleSnapshot(aggregateType, msg.getAggregateIdentifier());
             counter = 0;
         }
 

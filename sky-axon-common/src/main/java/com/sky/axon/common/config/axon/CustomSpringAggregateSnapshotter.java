@@ -63,37 +63,35 @@ public class CustomSpringAggregateSnapshotter extends AggregateSnapshotter imple
         return new CustomSpringAggregateSnapshotter.Builder();
     }
 
-    public void scheduleSnapshot(Class<?> aggregateType, String aggregateIdentifier, String dataSource) {
-        String dataSource1 = DataSourceContext.getDataSource();
-        log.info("custom snapshot datasource :{}" + dataSource1 + "==" + dataSource);
-        DataSourceContext.setDataSource(dataSource);
-        this.scheduleSnapshot(aggregateType, aggregateIdentifier);
-    }
+//    public void scheduleSnapshot(Class<?> aggregateType, String aggregateIdentifier, String dataSource) {
+//        String dataSource1 = DataSourceContext.getDataSource();
+//        log.info("custom snapshot datasource :{}" + dataSource1 + "==" + dataSource);
+//        DataSourceContext.setDataSource(dataSource);
+//        this.scheduleSnapshot(aggregateType, aggregateIdentifier);
+//    }
 
     @Override
     public void scheduleSnapshot(Class<?> aggregateType, String aggregateIdentifier) {
         String dataSource = DataSourceContext.getDataSource();
         log.info("CustomSpringAggregateSnapshotter.scheduleSnapshot datasource :{}", dataSource);
         getExecutor().execute(new SilentTask(() -> {
-            String dataSource1 = DataSourceContext.getDataSource();
-            log.info("CustomSpringAggregateSnapshotter.silentTask dataSource :{} ", dataSource1);
             NoTransactionManager.INSTANCE.executeInTransaction(this.createSnapshotterTask(aggregateType, aggregateIdentifier));
         }, dataSource));
     }
 
 
-    /**
-     * Creates an instance of a task that contains the actual snapshot creation logic.
-     *
-     * @param aggregateType       The type of the aggregate to create a snapshot for
-     * @param aggregateIdentifier The identifier of the aggregate to create a snapshot for
-     * @return the task containing snapshot creation logic
-     */
-    @Override
-    protected Runnable createSnapshotterTask(Class<?> aggregateType, String aggregateIdentifier) {
-        String dataSource = DataSourceContext.getDataSource();
-        return new CreateSnapshotTask(aggregateType, aggregateIdentifier, dataSource);
-    }
+//    /**
+//     * Creates an instance of a task that contains the actual snapshot creation logic.
+//     *
+//     * @param aggregateType       The type of the aggregate to create a snapshot for
+//     * @param aggregateIdentifier The identifier of the aggregate to create a snapshot for
+//     * @return the task containing snapshot creation logic
+//     */
+//    @Override
+//    protected Runnable createSnapshotterTask(Class<?> aggregateType, String aggregateIdentifier) {
+//        String dataSource = DataSourceContext.getDataSource();
+//        return new CreateSnapshotTask(aggregateType, aggregateIdentifier, dataSource);
+//    }
 
 
     @Override
@@ -147,11 +145,8 @@ public class CustomSpringAggregateSnapshotter extends AggregateSnapshotter imple
         @Override
         public void run() {
             try {
-                log.info("==1==" + DataSourceContext.getDataSource());
                 DataSourceContext.setDataSource(dataSource);
-                log.info("==2==" + DataSourceContext.getDataSource());
                 snapshotterTask.run();
-                // DataSourceContext.clearDataSource();
             } catch (ConcurrencyException e) {
                 log.info("An up-to-date snapshot entry already exists, ignoring this attempt.");
             } catch (Exception e) {
@@ -168,7 +163,7 @@ public class CustomSpringAggregateSnapshotter extends AggregateSnapshotter imple
     }
 
 
-    private final class CreateSnapshotTask implements Runnable {
+    /*private final class CreateSnapshotTask implements Runnable {
 
         private final Class<?> aggregateType;
         private final String identifier;
@@ -193,7 +188,7 @@ public class CustomSpringAggregateSnapshotter extends AggregateSnapshotter imple
             }
             DataSourceContext.clearDataSource();
         }
-    }
+    }*/
 
     public static class Builder extends org.axonframework.eventsourcing.AggregateSnapshotter.Builder {
 

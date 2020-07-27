@@ -1,7 +1,7 @@
 package com.sky.axon.common.config.axon;
 
 import com.mongodb.client.MongoCollection;
-import com.sky.axon.common.config.mongo.DataSourceContext;
+import com.sky.axon.common.util.DataSourceContext;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
@@ -33,6 +33,10 @@ public class CustomAxonMongoTemplate implements org.axonframework.extensions.mon
 
     @Override
     public MongoCollection<Document> trackingTokensCollection() {
+        String dataSource = DataSourceContext.getDataSource();
+        if (dataSource == null) {
+            log.error("trackingTokensCollection datasource is null");
+        }
         return list.get(0).getCollection(trackingTokensCollectionName);
     }
 
@@ -40,6 +44,9 @@ public class CustomAxonMongoTemplate implements org.axonframework.extensions.mon
     public MongoCollection<Document> eventCollection() {
         //TODO 启动时创建索引会调用
         String dataSource = DataSourceContext.getDataSource();
+        if (dataSource == null) {
+            log.error("eventCollection datasource is null");
+        }
         log.info("eventCollection datasource:{}", dataSource);
         return list.get(0).getCollection(domainEventsCollectionName);
     }
@@ -47,6 +54,9 @@ public class CustomAxonMongoTemplate implements org.axonframework.extensions.mon
     @Override
     public MongoCollection<Document> snapshotCollection() {
         String dataSource = DataSourceContext.getDataSource();
+        if (dataSource == null) {
+            log.error("snapshotCollection datasource is null");
+        }
         log.info("snapshotCollection datasource:{}" + dataSource);
         return list.get(0).getCollection(snapshotEventsCollectionName);
     }
